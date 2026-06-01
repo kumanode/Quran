@@ -434,9 +434,9 @@
       "id": "ad_dussary",
       "reciter": "Yasser ad-Dussary",
       "style": null,
-      "url_template": "https://download.quranicaudio.com/qdc/yasser_ad-dussary/mp3/{chapNo:%01d}.mp3",
+      "url_template": "https://github.com/dabatase/ad_dussary/releases/download/v1/{chapNo:%03d}.mp3",
       "timing_url": "ghraw://AlfaazPlus/QuranAppInventory/master/audio_timings/ad_dussary.json.gz",
-      "timing_version": 1,
+      "timing_version": 2,
       "translations": {
         "ar": "ياسر الدوسري",
         "bn": "ইয়াসির আদ-দুসারী",

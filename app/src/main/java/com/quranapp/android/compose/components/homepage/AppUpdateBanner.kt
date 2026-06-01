@@ -111,17 +111,17 @@ private fun AnimatedUpdateAppIcon(modifier: Modifier = Modifier) {
 
     val eased = 1f - (1f - cycle.value).toDouble().pow(2.0).toFloat()
     val transY = lerpKeyframes(floatArrayOf(0f, 8f, -10f, 10f, -3f, 0f), eased)
-    var scaleX = lerpKeyframes(floatArrayOf(1f, 1.1f, .8f, 1.3f, 1.03f, 1f), eased)
-    var scaleY = lerpKeyframes(floatArrayOf(1f, .8f, 1.1f, .9f, 1f, 1f), eased)
+    val scaleX = lerpKeyframes(floatArrayOf(1f, 1.1f, .8f, 1.3f, 1.03f, 1f), eased)
+    val scaleY = lerpKeyframes(floatArrayOf(1f, .8f, 1.1f, .9f, 1f, 1f), eased)
 
     Icon(
         painter = painterResource(R.drawable.dr_icon_update_app),
         contentDescription = null,
         tint = null,
         modifier = modifier.graphicsLayer {
-            translationY = with(density) { transY.dp.toPx() }
-            scaleX = scaleX
-            scaleY = scaleY
+            this.translationY = with(density) { transY.dp.toPx() }
+            this.scaleX = scaleX
+            this.scaleY = scaleY
         },
     )
 }
