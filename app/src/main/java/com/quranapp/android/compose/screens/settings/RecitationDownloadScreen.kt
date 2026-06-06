@@ -96,6 +96,12 @@ private sealed class RecitationPendingDialog {
         val name: String,
     ) : RecitationPendingDialog()
 
+    data class ConfirmUpdateDownload(
+        val kind: RecitationAudioKind,
+        val reciterId: String,
+        val name: String,
+    ) : RecitationPendingDialog()
+
     data class ConfirmDeleteChapter(
         val kind: RecitationAudioKind,
         val reciterId: String,
@@ -168,6 +174,10 @@ fun RecitationDownloadScreen() {
                     onCancelRequested = { kind, id, name ->
                         pendingDialog =
                             RecitationPendingDialog.ConfirmCancelDownload(kind, id, name)
+                    },
+                    onUpdateRequested = { kind, id, name ->
+                        pendingDialog =
+                            RecitationPendingDialog.ConfirmUpdateDownload(kind, id, name)
                     },
                     onOpenChapterSheet = { kind, id, name ->
                         viewModel.onEvent(
@@ -261,6 +271,40 @@ fun RecitationDownloadScreen() {
             )
         }
 
+        is RecitationPendingDialog.ConfirmUpdateDownload -> {
+            AlertDialog(
+                isOpen = true,
+                onClose = { pendingDialog = null },
+                title = stringResource(R.string.recitationDownloadUpdateConfirmTitle),
+                actions = listOf(
+                    AlertDialogAction(
+                        text = stringResource(R.string.strLabelCancel),
+                        style = AlertDialogActionStyle.Default,
+                        onClick = {},
+                    ),
+                    AlertDialogAction(
+                        text = stringResource(R.string.strLabelUpdate),
+                        style = AlertDialogActionStyle.Primary,
+                        onClick = {
+                            viewModel.onEvent(
+                                RecitationDownloadEvent.UpdateReciter(
+                                    dialog.kind,
+                                    dialog.reciterId,
+                                ),
+                            )
+                        },
+                    ),
+                ),
+                content = {
+                    Text(
+                        text = stringResource(R.string.recitationDownloadUpdateConfirmMessage) +
+                                "\n\n${dialog.name}",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                },
+            )
+        }
+
         is RecitationPendingDialog.ConfirmDeleteChapter -> {
             AlertDialog(
                 isOpen = true,
@@ -307,6 +351,7 @@ private fun RecitationDownloadContent(
     busyDownloadKey: String?,
     onDownloadRequested: (RecitationAudioKind, String, String) -> Unit,
     onCancelRequested: (RecitationAudioKind, String, String) -> Unit,
+    onUpdateRequested: (RecitationAudioKind, String, String) -> Unit,
     onOpenChapterSheet: (RecitationAudioKind, String, String) -> Unit,
 ) {
     val tabs = listOf(
@@ -357,6 +402,9 @@ private fun RecitationDownloadContent(
                     onCancel = { id, name ->
                         onCancelRequested(RecitationAudioKind.QURAN, id, name)
                     },
+                    onUpdate = { id, name ->
+                        onUpdateRequested(RecitationAudioKind.QURAN, id, name)
+                    },
                     onOpenChapterSheet = { id, name ->
                         onOpenChapterSheet(RecitationAudioKind.QURAN, id, name)
                     },
@@ -373,6 +421,9 @@ private fun RecitationDownloadContent(
                     },
                     onCancel = { id, name ->
                         onCancelRequested(RecitationAudioKind.TRANSLATION, id, name)
+                    },
+                    onUpdate = { id, name ->
+                        onUpdateRequested(RecitationAudioKind.TRANSLATION, id, name)
                     },
                     onOpenChapterSheet = { id, name ->
                         onOpenChapterSheet(RecitationAudioKind.TRANSLATION, id, name)
@@ -392,6 +443,7 @@ private fun <T : RecitationModelBase> ReciterList(
     busyDownloadKey: String?,
     onDownload: (String, String) -> Unit,
     onCancel: (String, String) -> Unit,
+    onUpdate: (String, String) -> Unit,
     onOpenChapterSheet: (String, String) -> Unit,
 ) {
     LazyColumn(
@@ -410,7 +462,10 @@ private fun <T : RecitationModelBase> ReciterList(
 
         items(reciters, key = { it.id }) { reciter ->
             val key = RecitationDownloadViewModel.stateKey(audioKind, reciter.id)
-            val state = downloadStates[key] ?: RecitationBatchDownloadState(0, 0, 0)
+            val state = downloadStates[key] ?: RecitationBatchDownloadState(
+                downloadedCount = 0,
+                inProgressCount = 0,
+            )
             val downloadBlockedByOther =
                 busyDownloadKey != null && busyDownloadKey != key
 
@@ -428,6 +483,9 @@ private fun <T : RecitationModelBase> ReciterList(
                 onCancel = {
                     onCancel(reciter.id, reciter.getReciterName())
                 },
+                onUpdate = {
+                    onUpdate(reciter.id, reciter.getReciterName())
+                },
             )
         }
     }
@@ -442,6 +500,7 @@ private fun ReciterDownloadCard(
     onOpenChapters: () -> Unit,
     onDownload: () -> Unit,
     onCancel: () -> Unit,
+    onUpdate: () -> Unit,
 ) {
     val total = state.totalChapters
     val rawProgress = if (total > 0) state.downloadedCount.toFloat() / total else 0f
@@ -515,6 +574,15 @@ private fun ReciterDownloadCard(
                     }
 
                     when {
+                        state.needsAudioUpdate -> {
+                            Text(
+                                text = stringResource(R.string.updateAvailable),
+                                style = typography.labelMedium,
+                                color = colorScheme.tertiary,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                        }
+
                         isComplete -> {
                             Text(
                                 text = stringResource(R.string.recitationDownloadAllComplete),
@@ -565,6 +633,14 @@ private fun ReciterDownloadCard(
                     contentAlignment = Alignment.Center,
                 ) {
                     when {
+                        state.needsAudioUpdate -> {
+                            IconButton(
+                                painter = painterResource(R.drawable.dr_icon_refresh),
+                                contentDescription = stringResource(R.string.strLabelUpdate),
+                                onClick = onUpdate,
+                            )
+                        }
+
                         isComplete -> {
                             Icon(
                                 painter = painterResource(R.drawable.dr_icon_check_circle),

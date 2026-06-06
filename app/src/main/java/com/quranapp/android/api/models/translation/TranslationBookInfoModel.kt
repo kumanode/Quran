@@ -20,6 +20,7 @@ class TranslationBookInfoModel(val slug: String) : java.io.Serializable {
     var langName = ""
     var langCode = ""
     var lastUpdated: Long = -1
+    var version: Long = -1
     var downloadPath = ""
 
     val isUrdu get() = langCode == "ur"
@@ -51,6 +52,7 @@ class TranslationBookInfoModel(val slug: String) : java.io.Serializable {
         result = 31 * result + displayName.hashCode()
         result = 31 * result + langName.hashCode()
         result = 31 * result + langCode.hashCode()
+        result = 31 * result + version.hashCode()
         result = 31 * result + isUrdu.hashCode()
         return result
     }

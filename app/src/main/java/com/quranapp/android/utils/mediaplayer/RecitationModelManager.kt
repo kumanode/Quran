@@ -33,12 +33,6 @@ class RecitationModelManager private constructor(
 ) {
     private val appContext = context.applicationContext
 
-    private val DIR_NAME_LEGACY: String = FileUtils.createPath(
-        AppUtils.BASE_APP_DOWNLOADED_SAVED_DATA_DIR, "recitations"
-    )
-    private val DIR_NAME: String = FileUtils.createPath(
-        AppUtils.BASE_APP_DOWNLOADED_SAVED_DATA_DIR, "recitations_v2"
-    )
 
     private val QURAN_MANIFEST_FILENAME = "available_recitations.json"
     private val TRANSLATION_MANIFEST_FILENAME = "available_recitation_translations.json"
@@ -309,7 +303,6 @@ class RecitationModelManager private constructor(
             }
         }
 
-    private fun getRecitationsDir() = FileUtils.makeAndGetAppResourceDir(DIR_NAME)
 
     /**
      * Counts non-empty `.mp3` files under per-reciter dirs and how many reciter dirs have at least one
@@ -417,6 +410,15 @@ class RecitationModelManager private constructor(
     }
 
     companion object {
+        private val DIR_NAME_LEGACY: String = FileUtils.createPath(
+            AppUtils.BASE_APP_DOWNLOADED_SAVED_DATA_DIR, "recitations"
+        )
+        private val DIR_NAME: String = FileUtils.createPath(
+            AppUtils.BASE_APP_DOWNLOADED_SAVED_DATA_DIR, "recitations_v2"
+        )
+
+        fun getRecitationsDir() = FileUtils.makeAndGetAppResourceDir(DIR_NAME)
+
         @Volatile
         private var instance: RecitationModelManager? = null
 

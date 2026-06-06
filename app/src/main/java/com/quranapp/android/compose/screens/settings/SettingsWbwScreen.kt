@@ -46,7 +46,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.quranapp.android.compose.utils.preferences.DataStoreManager
 import com.quranapp.android.R
 import com.quranapp.android.compose.components.common.AlertCard
 import com.quranapp.android.compose.components.common.AppBar
@@ -59,6 +58,7 @@ import com.quranapp.android.compose.components.dialogs.AlertDialogActionStyle
 import com.quranapp.android.compose.components.settings.ListItemCategoryLabel
 import com.quranapp.android.compose.components.settings.WbwAudioDownloadSheet
 import com.quranapp.android.compose.utils.LocalAppLocale
+import com.quranapp.android.compose.utils.preferences.DataStoreManager
 import com.quranapp.android.compose.utils.preferences.ReaderPreferences
 import com.quranapp.android.utils.managers.ResourceDownloadStatus
 import com.quranapp.android.utils.reader.ReaderTextSizeUtils
@@ -287,7 +287,7 @@ private fun WbwRow(
                 )
 
                 downloadStatus is ResourceDownloadStatus.Started -> stringResource(R.string.textDownloading)
-                row.isUpdateAvailable -> stringResource(R.string.strLabelUpdate)
+                row.isUpdateAvailable -> stringResource(R.string.updateAvailable)
                 isDownloaded -> stringResource(R.string.strLabelDownloaded)
                 else -> null
             }
@@ -297,9 +297,11 @@ private fun WbwRow(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
                     color = if (downloadStatus is ResourceDownloadStatus.Failed)
-                        MaterialTheme.colorScheme.error
+                        colorScheme.error
+                    else if (row.isUpdateAvailable)
+                        colorScheme.tertiary
                     else
-                        MaterialTheme.colorScheme.onSurfaceVariant,
+                        colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -355,6 +357,7 @@ private fun WbwRow(
                         painter = painterResource(icon),
                         enabled = !isAnyDownloading || isDownloading,
                         onClick = onDownloadOrUpdate,
+                        tint = if (row.isUpdateAvailable) colorScheme.tertiary else colorScheme.onBackground
                     )
                 } else {
                     AppIconButton(

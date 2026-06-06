@@ -10,6 +10,7 @@ import com.quranapp.android.db.DatabaseProvider
 import com.quranapp.android.utils.managers.ResourceDownloadStatus
 import com.quranapp.android.utils.reader.wbw.WbwDownloadManager
 import com.quranapp.android.utils.reader.wbw.WbwManager
+import com.quranapp.android.utils.reader.wbw.WbwVersionManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +31,7 @@ data class WbwSettingsUiState(
     val selectedWbwId: String? = null,
     val rows: List<WbwUiModel> = emptyList(),
     val downloadStates: Map<String, ResourceDownloadStatus> = emptyMap(),
+    val hasAnyUpdates: Boolean = false,
 )
 
 class WbwSettingsViewModel(
@@ -37,6 +39,7 @@ class WbwSettingsViewModel(
 ) : AndroidViewModel(application) {
     private val context get() = getApplication<Application>()
     private val db get() = DatabaseProvider.getExternalQuranDatabase(context)
+    private val versionManager = WbwVersionManager.get(context)
 
     private val _uiState = MutableStateFlow(WbwSettingsUiState())
     val uiState: StateFlow<WbwSettingsUiState> = _uiState.asStateFlow()
@@ -45,7 +48,11 @@ class WbwSettingsViewModel(
         WbwDownloadManager.initialize(context)
         observeSelection()
         observeDownloads()
+        observeVersionState()
         load(force = false)
+        viewModelScope.launch {
+            versionManager.refreshOutdatedState()
+        }
     }
 
     private fun observeSelection() {
@@ -71,8 +78,20 @@ class WbwSettingsViewModel(
                 }
 
                 if (status is ResourceDownloadStatus.Completed) {
+                    versionManager.markResourceUpdated(id)
                     refreshRows()
                 }
+            }
+        }
+    }
+
+    private fun observeVersionState() {
+        viewModelScope.launch {
+            versionManager.updateUiState.collect { state ->
+                _uiState.update {
+                    it.copy(hasAnyUpdates = state.hasOutdatedDownloads)
+                }
+                refreshRows()
             }
         }
     }
@@ -82,6 +101,7 @@ class WbwSettingsViewModel(
 
         viewModelScope.launch {
             val manifest = WbwManager.getAvailable(context, forceRefresh = force)
+            versionManager.refreshOutdatedState()
 
             if (manifest == null) {
                 _uiState.update { it.copy(isLoading = false, error = DataLoadError.Failed) }
@@ -136,8 +156,7 @@ class WbwSettingsViewModel(
             )
             .map { info ->
                 val isDownloaded = downloadedIds.contains(info.id)
-                val localVersion = WbwManager.getResourceVersion(context, info.id)
-                val isUpdateAvailable = isDownloaded && info.version > localVersion
+                val isUpdateAvailable = isDownloaded && versionManager.needsUpdate(info.id)
                 WbwUiModel(
                     info = info,
                     isDownloaded = isDownloaded,
@@ -194,6 +213,7 @@ class WbwSettingsViewModel(
     fun deleteWbwData(id: String) {
         viewModelScope.launch {
             db.wbwDao().deleteByWbwId(id)
+            versionManager.refreshOutdatedState()
             refreshRows()
         }
     }

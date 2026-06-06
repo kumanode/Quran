@@ -16,7 +16,6 @@ import com.quranapp.android.activities.ActivitySettings
 import com.quranapp.android.api.RetrofitInstance
 import com.quranapp.android.api.models.translation.TranslationBookInfoModel
 import com.quranapp.android.compose.navigation.SettingRoutes
-import com.quranapp.android.compose.utils.preferences.ReaderPreferences
 import com.quranapp.android.search.SearchIndexScheduler
 import com.quranapp.android.utils.Logger
 import com.quranapp.android.utils.app.AppActions
@@ -126,10 +125,6 @@ class TranslationDownloadWorker(
         SearchIndexScheduler.enqueueSlug(ctx.applicationContext, bookInfo.slug)
 
         removeFromPendingAction(ctx, AppActions.APP_ACTION_TRANSL_UPDATE, bookInfo.slug)
-        val savedTranslations = ReaderPreferences.getTranslations().toMutableSet()
-        if (savedTranslations.remove(bookInfo.slug)) {
-            ReaderPreferences.setTranslations(savedTranslations)
-        }
     }
 
     private fun createForegroundInfo(

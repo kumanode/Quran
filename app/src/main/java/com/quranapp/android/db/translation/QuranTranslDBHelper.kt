@@ -37,6 +37,7 @@ class QuranTranslDBHelper(private val context: Context) : SQLiteOpenHelper(
         private const val DB_NAME = "QuranTranslation.db"
         const val DB_VERSION = 1
         private const val BUSY_TIMEOUT_MS = 5000
+        private const val LEGACY_VERSION_THRESHOLD = 1_000_000L
 
         /**
          * Escapes tables name as it may contain special characters.
@@ -72,15 +73,29 @@ class QuranTranslDBHelper(private val context: Context) : SQLiteOpenHelper(
         onUpgrade(db, oldVersion, newVersion)
     }
 
+    override fun onOpen(db: SQLiteDatabase) {
+        super.onOpen(db)
+        if (!db.isReadOnly) {
+            runCatching {
+                syncPrebuiltTranslationsIfNeeded(db)
+            }.onFailure {
+                Log.saveError(it, "QuranTranslDBHelper.onOpen.syncPrebuiltTranslationsIfNeeded")
+            }
+        }
+    }
+
     override fun onCreate(DB: SQLiteDatabase) {
         createTranslInfoTable(DB)
         DB.transaction {
             try {
-                for (bookInfo in TranslUtils.preBuiltTranslBooksInfo()) {
-                    val prebuiltTranslPath = TranslUtils.getPrebuiltTranslPath(bookInfo.slug)
+                for (bookInfo in TranslUtils.preBuiltTranslBooksInfo(context)) {
+                    val prebuiltTranslPath =
+                        TranslUtils.getPrebuiltTranslPath(bookInfo.slug) ?: continue
+
                     val translStrData = StringUtils.readInputStream(
                         context.assets.open(prebuiltTranslPath)
                     )
+
                     storeTranslation(bookInfo, translStrData, this)
                 }
 
@@ -200,6 +215,12 @@ class QuranTranslDBHelper(private val context: Context) : SQLiteOpenHelper(
     }
 
     private fun storeTranslationInfo(bookInfo: TranslationBookInfoModel, DB: SQLiteDatabase) {
+        val storedVersion = if (bookInfo.version > 0) {
+            bookInfo.version
+        } else {
+            1L
+        }
+
         val values = ContentValues().apply {
             put(QuranTranslInfoEntry.COL_SLUG, bookInfo.slug)
             put(QuranTranslInfoEntry.COL_LANG_CODE, bookInfo.langCode)
@@ -207,11 +228,16 @@ class QuranTranslDBHelper(private val context: Context) : SQLiteOpenHelper(
             put(QuranTranslInfoEntry.COL_BOOK_NAME, bookInfo.bookName)
             put(QuranTranslInfoEntry.COL_AUTHOR_NAME, bookInfo.authorName)
             put(QuranTranslInfoEntry.COL_DISPLAY_NAME, bookInfo.displayName)
-            put(QuranTranslInfoEntry.COL_LAST_UPDATED, bookInfo.lastUpdated)
+            put(QuranTranslInfoEntry.COL_LAST_UPDATED, storedVersion)
             put(QuranTranslInfoEntry.COL_DOWNLOAD_PATH, bookInfo.downloadPath)
         }
 
-        DB.insert(QuranTranslInfoEntry.TABLE_NAME, null, values)
+        DB.insertWithOnConflict(
+            QuranTranslInfoEntry.TABLE_NAME,
+            null,
+            values,
+            SQLiteDatabase.CONFLICT_REPLACE,
+        )
     }
 
     fun storeTranslation(
@@ -220,6 +246,7 @@ class QuranTranslDBHelper(private val context: Context) : SQLiteOpenHelper(
         DB: SQLiteDatabase?
     ) {
         fun runStore(db: SQLiteDatabase) {
+            db.execSQL("DROP TABLE IF EXISTS ${escapeTableName(bookInfo.slug)}")
             storeTranslationInfo(bookInfo, db)
             createTranslTable(db, bookInfo)
 
@@ -242,5 +269,67 @@ class QuranTranslDBHelper(private val context: Context) : SQLiteOpenHelper(
 
     fun storeTranslation(bookInfo: TranslationBookInfoModel, translData: String) {
         storeTranslation(bookInfo, translData, writableDatabase)
+    }
+
+    private fun syncPrebuiltTranslationsIfNeeded(db: SQLiteDatabase) {
+        val prebuiltInfos = TranslUtils.preBuiltTranslBooksInfo(context)
+        if (prebuiltInfos.isEmpty()) return
+
+        db.transaction {
+            for (bookInfo in prebuiltInfos) {
+                val requiredVersion = if (bookInfo.version > 0) bookInfo.version else 1L
+                val rawCurrentVersion = getStoredVersion(this, bookInfo.slug)
+                val currentVersion = normalizeStoredVersion(rawCurrentVersion)
+
+                // Backfill legacy timestamp-based values so future version checks work.
+                if (rawCurrentVersion != null && rawCurrentVersion != currentVersion) {
+                    updateStoredVersion(this, bookInfo.slug, currentVersion)
+                }
+
+                if (currentVersion >= requiredVersion) continue
+
+                val prebuiltTranslPath =
+                    TranslUtils.getPrebuiltTranslPath(bookInfo.slug) ?: continue
+                val translStrData = StringUtils.readInputStream(
+                    context.assets.open(prebuiltTranslPath)
+                )
+                storeTranslation(bookInfo, translStrData, this)
+            }
+        }
+    }
+
+    private fun getStoredVersion(db: SQLiteDatabase, slug: String): Long? {
+        db.query(
+            true,
+            QuranTranslInfoEntry.TABLE_NAME,
+            arrayOf(QuranTranslInfoEntry.COL_LAST_UPDATED),
+            "${QuranTranslInfoEntry.COL_SLUG}=?",
+            arrayOf(slug),
+            null,
+            null,
+            null,
+            "1"
+        ).use { cursor ->
+            if (!cursor.moveToFirst()) return null
+            return cursor.getLong(cursor.getColumnIndexOrThrow(QuranTranslInfoEntry.COL_LAST_UPDATED))
+        }
+    }
+
+    private fun updateStoredVersion(db: SQLiteDatabase, slug: String, version: Long) {
+        val values = ContentValues().apply {
+            put(QuranTranslInfoEntry.COL_LAST_UPDATED, version)
+        }
+        db.update(
+            QuranTranslInfoEntry.TABLE_NAME,
+            values,
+            "${QuranTranslInfoEntry.COL_SLUG}=?",
+            arrayOf(slug),
+        )
+    }
+
+    private fun normalizeStoredVersion(raw: Long?): Long {
+        if (raw == null || raw <= 0L) return 1L
+        if (raw > LEGACY_VERSION_THRESHOLD) return 1L
+        return raw
     }
 }

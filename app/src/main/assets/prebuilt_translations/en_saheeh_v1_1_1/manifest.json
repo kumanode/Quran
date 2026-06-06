@@ -1,1 +1,9 @@
-{"id":101,"slug":"en_101_sahih-international","book":"Sahih International","author":"Al-Muntada Al-Islami (Islamic Forum)","display-name":"Sahih International","lang-code":"en","lang-name":"English"}
+{
+  "book": "Sahih International",
+  "author": "Al-Muntada Al-Islami (Islamic Forum)",
+  "displayName": "Sahih International",
+  "langCode": "en",
+  "langName": "English",
+  "version": 1,
+  "downloadPath": "prebuilt_translations/en_saheeh_v1_1_1/en_saheeh_v1_1_1.json"
+}

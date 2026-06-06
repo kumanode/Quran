@@ -18,6 +18,7 @@ import com.quranapp.android.utils.Log
 import com.quranapp.android.utils.mediaplayer.RecitationAudioRepository
 import com.quranapp.android.utils.mediaplayer.RecitationDownloadProgressBus
 import com.quranapp.android.utils.mediaplayer.RecitationModelManager
+import com.quranapp.android.utils.mediaplayer.RecitationVersionManager
 import com.quranapp.android.utils.quran.QuranMeta
 import com.quranapp.android.utils.receivers.NetworkStateReceiver
 import com.quranapp.android.utils.workers.RecitationAudioDownloadWorker
@@ -109,6 +110,7 @@ private class ParsedWorkState(val infos: List<WorkInfo>) {
 data class RecitationBatchDownloadState(
     val downloadedCount: Int,
     val inProgressCount: Int,
+    val needsAudioUpdate: Boolean = false,
     val totalChapters: Int = QuranMeta.chapterRange.last,
 ) {
     val isComplete: Boolean get() = downloadedCount >= totalChapters
@@ -145,6 +147,9 @@ sealed interface RecitationDownloadEvent {
     data class CancelDownload(val kind: RecitationAudioKind, val reciterId: String) :
         RecitationDownloadEvent
 
+    data class UpdateReciter(val kind: RecitationAudioKind, val reciterId: String) :
+        RecitationDownloadEvent
+
     data class OpenChapterSheet(
         val kind: RecitationAudioKind,
         val reciterId: String,
@@ -177,6 +182,7 @@ class RecitationDownloadViewModel(application: Application) : AndroidViewModel(a
 
     private val context get() = getApplication<Application>().applicationContext
     private val modelManager = RecitationModelManager.get(context)
+    private val versionManager = RecitationVersionManager.get(context)
     private val workManager = WorkManager.getInstance(context)
 
     private val recomputeMutex = Mutex()
@@ -205,6 +211,16 @@ class RecitationDownloadViewModel(application: Application) : AndroidViewModel(a
                     recomputeStates(infos)
                 }
         }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            versionManager.refreshOutdatedState()
+        }
+
+        viewModelScope.launch {
+            versionManager.updateUiState.collect {
+                triggerRecompute()
+            }
+        }
     }
 
     fun onEvent(event: RecitationDownloadEvent) {
@@ -219,6 +235,9 @@ class RecitationDownloadViewModel(application: Application) : AndroidViewModel(a
 
             is RecitationDownloadEvent.CancelDownload ->
                 cancelBatchDownload(event.kind, event.reciterId)
+
+            is RecitationDownloadEvent.UpdateReciter ->
+                updateReciter(event.kind, event.reciterId)
 
             is RecitationDownloadEvent.OpenChapterSheet -> {
                 _uiState.update {
@@ -343,6 +362,17 @@ class RecitationDownloadViewModel(application: Application) : AndroidViewModel(a
                         newMap[k] = v
                     }
 
+                    val completedReciters = mutableSetOf<String>()
+                    for ((key, current) in newMap) {
+                        val previous = state.downloadStates[key]
+                        if (previous?.hasActiveWork == true &&
+                            !current.hasActiveWork &&
+                            current.isComplete
+                        ) {
+                            completedReciters.add(reciterIdFromStateKey(key))
+                        }
+                    }
+
                     _uiState.update { prev ->
                         val refreshedSheet = prev.chapterSheet?.let { sheet ->
                             val r = sheet.reciter
@@ -361,6 +391,14 @@ class RecitationDownloadViewModel(application: Application) : AndroidViewModel(a
                             downloadStates = newMap,
                             chapterSheet = refreshedSheet,
                         )
+                    }
+
+                    if (completedReciters.isNotEmpty()) {
+                        withContext(Dispatchers.IO) {
+                            completedReciters.forEach { reciterId ->
+                                versionManager.markAudioUpdated(reciterId)
+                            }
+                        }
                     }
                 }
             }
@@ -426,6 +464,7 @@ class RecitationDownloadViewModel(application: Application) : AndroidViewModel(a
         return RecitationBatchDownloadState(
             downloadedCount = downloaded,
             inProgressCount = inProgress,
+            needsAudioUpdate = downloaded > 0 && versionManager.needsAudioUpdate(reciterId),
         )
     }
 
@@ -568,18 +607,7 @@ class RecitationDownloadViewModel(application: Application) : AndroidViewModel(a
                     return@launch
                 }
 
-                val request = RecitationBulkDownloadWorker.oneTimeRequest(
-                    reciterId = reciterId,
-                    kind = kind,
-                    urlTemplate = model.urlTemplate,
-                    displayTitle = model.getReciterName(),
-                )
-
-                workManager.enqueueUniqueWork(
-                    RecitationBulkDownloadWorker.uniqueWorkName(reciterId, kind),
-                    ExistingWorkPolicy.KEEP,
-                    request,
-                )
+                enqueueBatchDownload(kind, reciterId, model)
             } catch (e: Exception) {
                 Log.saveError(e, "RecitationDownloadViewModel.startBatchDownload")
 
@@ -591,6 +619,44 @@ class RecitationDownloadViewModel(application: Application) : AndroidViewModel(a
                         ),
                     )
                 }
+            }
+        }
+    }
+
+    private fun updateReciter(kind: RecitationAudioKind, reciterId: String) {
+        val model = findModel(kind, reciterId) ?: return
+
+        if (!NetworkStateReceiver.canProceed(context)) {
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val infos = getMergedWorkInfos()
+                val parsedState = ParsedWorkState(infos)
+                if (hasAnotherReciterActiveDownload(parsedState, reciterId)) {
+                    _events.emit(
+                        RecitationDownloadUiEvent.ShowMessage(
+                            title = context.getString(R.string.downloadRecitations),
+                            message = context.getString(R.string.recitationDownloadWaitForOtherReciter),
+                        ),
+                    )
+                    return@launch
+                }
+
+                workManager.cancelUniqueWork(
+                    RecitationBulkDownloadWorker.uniqueWorkName(reciterId, kind),
+                )
+                workManager.cancelAllWorkByTag(RecitationAudioDownloadWorker.reciterTag(reciterId, kind))
+                workManager.cancelAllWorkByTag(RecitationBulkDownloadWorker.reciterTag(reciterId, kind))
+
+                modelManager.deleteReciterAudioDirectory(reciterId)
+                downloadedCache.remove(reciterId)
+
+                enqueueBatchDownload(kind, reciterId, model)
+                triggerRecompute()
+            } catch (e: Exception) {
+                Log.saveError(e, "RecitationDownloadViewModel.updateReciter")
             }
         }
     }
@@ -645,9 +711,37 @@ class RecitationDownloadViewModel(application: Application) : AndroidViewModel(a
         recomputeStates(getMergedWorkInfos())
     }
 
+    private fun enqueueBatchDownload(
+        kind: RecitationAudioKind,
+        reciterId: String,
+        model: RecitationModelBase,
+    ) {
+        val request = RecitationBulkDownloadWorker.oneTimeRequest(
+            reciterId = reciterId,
+            kind = kind,
+            urlTemplate = model.urlTemplate,
+            displayTitle = model.getReciterName(),
+        )
+
+        workManager.enqueueUniqueWork(
+            RecitationBulkDownloadWorker.uniqueWorkName(reciterId, kind),
+            ExistingWorkPolicy.KEEP,
+            request,
+        )
+    }
+
     companion object {
         fun stateKey(kind: RecitationAudioKind, reciterId: String): String =
             "${kind.name}:$reciterId"
+
+        private fun reciterIdFromStateKey(stateKey: String): String {
+            val idx = stateKey.indexOf(':')
+            return if (idx >= 0 && idx < stateKey.length - 1) {
+                stateKey.substring(idx + 1)
+            } else {
+                stateKey
+            }
+        }
     }
 }
 

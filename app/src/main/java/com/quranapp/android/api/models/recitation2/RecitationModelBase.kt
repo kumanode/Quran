@@ -26,6 +26,9 @@ open class RecitationModelBase {
     @SerialName("timing_version")
     var timingVersion: Int? = null
 
+    @SerialName("audio_version")
+    var audioVersion: Int? = null
+
     val translations: Map<String, String> = mapOf()
 
 

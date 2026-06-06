@@ -101,7 +101,7 @@ class TranslationSearchIndexWorker(
 
                 val book = factory.getTranslationBookInfo(slug)
                 val rowCount = countRows(factory, slug)
-                val fingerprint = "${book.lastUpdated}|$rowCount|${SEARCH_INDEX_DB_VERSION}"
+                val fingerprint = "${book.version}|$rowCount|${SEARCH_INDEX_DB_VERSION}"
 
                 val existing = dao.getMeta(slug)?.fingerprint
                 if (existing == fingerprint) return@use

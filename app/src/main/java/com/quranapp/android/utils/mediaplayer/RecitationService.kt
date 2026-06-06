@@ -1,7 +1,6 @@
 package com.quranapp.android.utils.mediaplayer
 
 import android.app.PendingIntent
-import android.content.Context
 import android.content.IntentFilter
 import android.media.AudioManager
 import android.os.Build
@@ -16,12 +15,9 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.cache.CacheDataSource
-import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
-import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.PlayerMessage
@@ -94,37 +90,6 @@ class RecitationService : MediaLibraryService() {
         const val EXTRA_SYNC = "sync"
         const val EXTRA_SEEK_AMOUNT = "seek_amount"
         const val EXTRA_FROM_USER = "from_user"
-
-        /** Max bytes for HTTP chapter audio in [SimpleCache] (LRU evicted when full). */
-        private const val RECITATION_CACHE_MAX_BYTES = 512L * 1024 * 1024
-
-        @Volatile
-        private var recitationSimpleCache: SimpleCache? = null
-
-        private val recitationCacheLock = Any()
-
-        /**
-         * Process-wide cache for streamed `https` chapter audio. Persists across [RecitationService]
-         * instances; not cleared on service destroy.
-         */
-        private fun recitationCache(context: Context): SimpleCache {
-            synchronized(recitationCacheLock) {
-                recitationSimpleCache?.let { return it }
-
-                val appCtx = context.applicationContext
-                val dir = File(appCtx.cacheDir, "exo_recitation_cache")
-
-                if (!dir.exists()) {
-                    dir.mkdirs()
-                }
-
-                val evictor = LeastRecentlyUsedCacheEvictor(RECITATION_CACHE_MAX_BYTES)
-
-                val dbProvider = StandaloneDatabaseProvider(appCtx)
-
-                return SimpleCache(dir, evictor, dbProvider).also { recitationSimpleCache = it }
-            }
-        }
 
         val sharedState = MutableStateFlow(RecitationServiceState.EMPTY)
     }
@@ -234,7 +199,7 @@ class RecitationService : MediaLibraryService() {
             3_000,
         ).build()
 
-        val cache = recitationCache(this)
+        val cache = RecitationStreamCache.get(this)
         val cacheDataSourceFactory = CacheDataSource.Factory()
             .setCache(cache)
             .setUpstreamDataSourceFactory(DefaultHttpDataSource.Factory())

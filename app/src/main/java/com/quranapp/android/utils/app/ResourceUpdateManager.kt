@@ -7,9 +7,12 @@ import com.quranapp.android.api.models.ResourcesVersions
 import com.quranapp.android.utils.Log
 import com.quranapp.android.utils.Logger
 import com.quranapp.android.utils.mediaplayer.RecitationModelManager
+import com.quranapp.android.utils.mediaplayer.RecitationVersionManager
 import com.quranapp.android.utils.mediaplayer.WbwAudioRepository
+import com.quranapp.android.utils.reader.translation.TranslationVersionManager
 import com.quranapp.android.utils.reader.tafsir.TafsirManager
 import com.quranapp.android.utils.reader.wbw.WbwManager
+import com.quranapp.android.utils.reader.wbw.WbwVersionManager
 import com.quranapp.android.utils.univ.FileUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -117,8 +120,22 @@ class ResourceUpdateManager private constructor(private val ctx: Context) {
                 ) {
                     try {
                         RecitationModelManager.get(ctx).refreshManifests()
+                        RecitationVersionManager.get(ctx).reconcileAfterManifestRefresh()
                     } catch (e: Exception) {
                         Log.saveError(e, "ResourceUpdateManager.updateRecitations")
+                    }
+                }
+            }
+
+            // Translations
+            launch {
+                if (force || local == null || remote.translationsVersion > local.translationsVersion) {
+                    try {
+                        TranslationVersionManager.get(ctx).reconcileAfterManifestRefresh(
+                            forceFetchManifest = true,
+                        )
+                    } catch (e: Exception) {
+                        Log.saveError(e, "ResourceUpdateManager.updateTranslations")
                     }
                 }
             }
@@ -139,6 +156,7 @@ class ResourceUpdateManager private constructor(private val ctx: Context) {
                 if (force || local == null || remote.wbwVersion > local.wbwVersion) {
                     try {
                         WbwManager.getAvailable(ctx, forceRefresh = true)
+                        WbwVersionManager.get(ctx).reconcileAfterManifestRefresh()
                     } catch (e: Exception) {
                         Log.saveError(e, "ResourceUpdateManager.updateWbw")
                     }

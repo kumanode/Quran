@@ -10,8 +10,12 @@ import com.quranapp.android.components.transls.TranslationGroupModel
 import com.quranapp.android.compose.utils.DataLoadError
 import com.quranapp.android.compose.utils.preferences.ReaderPreferences
 import com.quranapp.android.search.SearchIndexScheduler
+import com.quranapp.android.utils.managers.ResourceDownloadStatus
+import com.quranapp.android.utils.managers.TranslationDownloadManager
 import com.quranapp.android.utils.reader.TranslUtils
 import com.quranapp.android.utils.reader.factory.QuranTranslationFactory
+import com.quranapp.android.utils.reader.translation.TranslationVersionManager
+import com.quranapp.android.utils.receivers.NetworkStateReceiver
 import com.quranapp.android.utils.univ.FileUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +31,9 @@ data class TranslationUiState(
     val selectedSlugs: Set<String> = emptySet(),
     val saveTranslationChanges: Boolean = true,
     val searchQuery: String = "",
-    val error: DataLoadError? = null
+    val error: DataLoadError? = null,
+    val outdatedSlugs: Set<String> = emptySet(),
+    val updatingSlugs: Set<String> = emptySet(),
 )
 
 sealed interface TranslationEvent {
@@ -44,6 +50,7 @@ sealed interface TranslationEvent {
 
     data class Search(val query: String) : TranslationEvent
     data class DeleteTranslation(val slug: String) : TranslationEvent
+    data class UpdateTranslation(val slug: String) : TranslationEvent
 }
 
 class TranslationViewModel(application: Application) : AndroidViewModel(application) {
@@ -52,13 +59,54 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
     val uiState: StateFlow<TranslationUiState> = _uiState.asStateFlow()
 
     private val context get() = getApplication<Application>()
+    private val versionManager = TranslationVersionManager.get(context)
 
     init {
+        TranslationDownloadManager.initialize(context)
+
         viewModelScope.launch {
             val initialSlugs = ReaderPreferences.getTranslations()
             _uiState.update { it.copy(selectedSlugs = initialSlugs) }
-        
+
             loadTranslations()
+        }
+
+        viewModelScope.launch {
+            versionManager.refreshOutdatedState()
+        }
+
+        viewModelScope.launch {
+            versionManager.updateUiState.collect { state ->
+                _uiState.update {
+                    it.copy(outdatedSlugs = state.outdatedSlugs)
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            TranslationDownloadManager.observeDownloadsAsFlow().collect { (slug, status) ->
+                val isUpdating = _uiState.value.updatingSlugs.contains(slug)
+                if (!isUpdating) return@collect
+
+                when (status) {
+                    is ResourceDownloadStatus.Completed -> {
+                        versionManager.markTranslationUpdated(slug)
+                        _uiState.update {
+                            it.copy(updatingSlugs = it.updatingSlugs - slug)
+                        }
+                        loadTranslations(silent = true)
+                    }
+
+                    is ResourceDownloadStatus.Failed,
+                    is ResourceDownloadStatus.Cancelled -> {
+                        _uiState.update {
+                            it.copy(updatingSlugs = it.updatingSlugs - slug)
+                        }
+                    }
+
+                    else -> Unit
+                }
+            }
         }
     }
 
@@ -81,6 +129,7 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
 
             is TranslationEvent.Search -> _uiState.update { it.copy(searchQuery = event.query) }
             is TranslationEvent.DeleteTranslation -> deleteTranslation(event.slug)
+            is TranslationEvent.UpdateTranslation -> updateTranslation(event.slug)
         }
     }
 
@@ -164,6 +213,26 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
 
         viewModelScope.launch {
             ReaderPreferences.setTranslations(updatedSelectedSlugs)
+        }
+    }
+
+    private fun updateTranslation(slug: String) {
+        if (TranslUtils.isPrebuilt(slug)) return
+        if (!_uiState.value.outdatedSlugs.contains(slug)) return
+        if (!NetworkStateReceiver.canProceed(context.applicationContext)) return
+
+        viewModelScope.launch {
+            val remoteInfo = versionManager.getRemoteBookInfo(slug)
+                ?: QuranTranslationFactory(context.applicationContext).use { factory ->
+                    factory.getTranslationBookInfo(slug)
+                }
+
+            if (remoteInfo.downloadPath.isBlank()) return@launch
+
+            _uiState.update {
+                it.copy(updatingSlugs = it.updatingSlugs + slug)
+            }
+            TranslationDownloadManager.startDownload(context.applicationContext, remoteInfo)
         }
     }
 

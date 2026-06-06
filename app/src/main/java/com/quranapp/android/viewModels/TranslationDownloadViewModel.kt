@@ -15,6 +15,7 @@ import com.quranapp.android.utils.Log
 import com.quranapp.android.utils.managers.ResourceDownloadStatus
 import com.quranapp.android.utils.managers.TranslationDownloadManager
 import com.quranapp.android.utils.reader.factory.QuranTranslationFactory
+import com.quranapp.android.utils.reader.translation.TranslationVersionManager
 import com.quranapp.android.utils.receivers.NetworkStateReceiver
 import com.quranapp.android.utils.sharedPrefs.SPAppActions
 import com.quranapp.android.utils.univ.FileUtils
@@ -62,11 +63,15 @@ class TranslationDownloadViewModel(application: Application) : AndroidViewModel(
     val events = _events.asSharedFlow()
 
     private val context get() = getApplication<Application>().applicationContext
+    private val versionManager = TranslationVersionManager.get(context)
 
     init {
         TranslationDownloadManager.initialize(context)
         loadAvailableTranslations(force = SPAppActions.getFetchTranslationsForce(context))
         observeDownloadStates()
+        viewModelScope.launch {
+            versionManager.refreshOutdatedState()
+        }
     }
 
     private fun observeDownloadStates() {
@@ -184,7 +189,9 @@ class TranslationDownloadViewModel(application: Application) : AndroidViewModel(
         bookInfo.authorName = translObject["author"]?.jsonPrimitive?.contentOrNull ?: ""
         bookInfo.displayName = translObject["displayName"]?.jsonPrimitive?.contentOrNull ?: ""
         bookInfo.langName = translObject["langName"]?.jsonPrimitive?.contentOrNull ?: ""
-        bookInfo.lastUpdated = translObject["lastUpdated"]?.jsonPrimitive?.longOrNull ?: -1
+        bookInfo.version = translObject["version"]?.jsonPrimitive?.longOrNull
+            ?: 1L
+        bookInfo.lastUpdated = bookInfo.version
         bookInfo.downloadPath = translObject["downloadPath"]?.jsonPrimitive?.contentOrNull ?: ""
         return TranslModel(bookInfo)
     }
@@ -274,6 +281,9 @@ class TranslationDownloadViewModel(application: Application) : AndroidViewModel(
                     }
 
                     newDownloadStates.remove(slug)
+                    viewModelScope.launch {
+                        versionManager.markTranslationUpdated(slug)
+                    }
 
                     // remove from available list
                     for (group in newGroups) {

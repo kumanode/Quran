@@ -31,6 +31,7 @@
     <string name="strLabelStart">Start</string>
     <string name="labelDownload">Download</string>
     <string name="strLabelUpdate">Update</string>
+    <string name="strLabelManage">Manage</string>
     <string name="strLabelOn">On</string>
     <string name="strLabelOff">Off</string>
     <string name="strLabelThemeDark">Dark</string>
@@ -121,6 +122,10 @@
     <string name="recitationDownloadAllComplete">All chapters downloaded</string>
     <string name="recitationDownloadConfirmTitle">Download recitations</string>
     <string name="recitationDownloadConfirmMessage">Download all chapters for this reciter? This may use significant storage and data.</string>
+    <string name="updateAvailable">Update available</string>
+    <string name="recitationDownloadUpdateConfirmTitle">Update recitations</string>
+    <string name="recitationDownloadUpdateConfirmMessage">A newer audio version is available for this reciter. Updating will replace the downloaded chapters.</string>
+    <string name="recitationDownloadBannerUpdateAvailable">Downloaded recitation audio has updates available.</string>
     <string name="recitationDownloadSomeFailed">Some chapters failed. Tap retry to queue missing chapters again.</string>
     <string name="recitationDownloadWaitForOtherReciter">Another reciter is already downloading. Wait for it to finish or cancel it before starting a new download.</string>
     <string name="recitationBulkDownloadNotifProgress" formatted="false">%1$d / %2$d chapters downloaded</string>

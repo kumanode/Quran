@@ -1,1 +1,9 @@
-{"id":102,"slug":"en_102_the-clear-quran","book":"The Clear Quran","author":"Dr. Mustafa Khattab","display-name":"The Clear Quran","lang-code":"en","lang-name":"English"}
+{
+  "book": "The Clear Quran",
+  "author": "Dr. Mustafa Khattab",
+  "displayName": "The Clear Quran",
+  "langCode": "en",
+  "langName": "English",
+  "version": 2,
+  "downloadPath": "prebuilt_translations/en_the_clear_quran/en_the_clear_quran.json"
+}

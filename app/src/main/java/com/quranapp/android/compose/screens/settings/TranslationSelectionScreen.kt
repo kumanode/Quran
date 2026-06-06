@@ -138,6 +138,8 @@ fun TranslationSelectionScreen() {
                 else -> Content(
                     groups = visibleGroups,
                     selectedSlugs = uiState.selectedSlugs,
+                    outdatedSlugs = uiState.outdatedSlugs,
+                    updatingSlugs = uiState.updatingSlugs,
                 )
             }
         }
@@ -159,6 +161,8 @@ private fun LoadingState() {
 private fun Content(
     groups: List<TranslationGroupModel>,
     selectedSlugs: Set<String>,
+    outdatedSlugs: Set<String>,
+    updatingSlugs: Set<String>,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -169,6 +173,8 @@ private fun Content(
             LanguageGroupCard(
                 group = group,
                 selectedSlugs = selectedSlugs,
+                outdatedSlugs = outdatedSlugs,
+                updatingSlugs = updatingSlugs,
             )
         }
 
@@ -180,6 +186,8 @@ private fun Content(
 private fun LanguageGroupCard(
     group: TranslationGroupModel,
     selectedSlugs: Set<String>,
+    outdatedSlugs: Set<String>,
+    updatingSlugs: Set<String>,
 ) {
     val viewModel = viewModel<TranslationViewModel>()
 
@@ -278,6 +286,8 @@ private fun LanguageGroupCard(
                         TranslationRow(
                             translation = translation,
                             isSelected = selectedSlugs.contains(translation.bookInfo.slug),
+                            needsUpdate = outdatedSlugs.contains(translation.bookInfo.slug),
+                            isUpdating = updatingSlugs.contains(translation.bookInfo.slug),
                             onCheckChanged = {
                                 viewModel.onEvent(
                                     TranslationEvent.SelectionChanged(
@@ -290,6 +300,13 @@ private fun LanguageGroupCard(
                                     TranslationEvent.DeleteTranslation(
                                         translation.bookInfo.slug
                                     )
+                                )
+                            },
+                            onUpdate = {
+                                viewModel.onEvent(
+                                    TranslationEvent.UpdateTranslation(
+                                        translation.bookInfo.slug,
+                                    ),
                                 )
                             })
 
@@ -311,8 +328,11 @@ private fun LanguageGroupCard(
 private fun TranslationRow(
     translation: TranslModel,
     isSelected: Boolean,
+    needsUpdate: Boolean,
+    isUpdating: Boolean,
     onCheckChanged: (isChecked: Boolean) -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onUpdate: () -> Unit,
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
@@ -367,6 +387,16 @@ private fun TranslationRow(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+
+                if (needsUpdate) {
+                    Text(
+                        text = stringResource(R.string.updateAvailable),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colorScheme.tertiary,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                    )
+                }
             }
         }
 
@@ -382,29 +412,51 @@ private fun TranslationRow(
             Box(
                 modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center
             ) {
-                IconButton(
-                    onClick = {
-                        MessageUtils.showConfirmationDialog(
-                            context = context,
-                            title = resources.getString(R.string.strTitleTranslDelete),
-                            msg = resources.getString(
-                                R.string.msgDeleteTranslation,
-                                bookInfo.bookName,
-                                bookInfo.authorName
-                            ),
-                            btn = resources.getString(R.string.strLabelDelete),
-                            btnColor = ColorUtils.DANGER,
-                            action = {
-                                onDelete()
-                            })
-                    }, modifier = Modifier.size(40.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.dr_icon_delete),
-                        contentDescription = stringResource(R.string.strLabelDelete),
-                        tint = colorScheme.error,
-                        modifier = Modifier.size(20.dp)
-                    )
+                if (needsUpdate) {
+                    if (isUpdating) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp,
+                        )
+                    } else {
+                        IconButton(
+                            onClick = onUpdate,
+                            modifier = Modifier.size(40.dp),
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.dr_icon_refresh),
+                                contentDescription = stringResource(R.string.strLabelUpdate),
+                                tint = colorScheme.tertiary,
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
+                    }
+                } else {
+                    IconButton(
+                        onClick = {
+                            MessageUtils.showConfirmationDialog(
+                                context = context,
+                                title = resources.getString(R.string.strTitleTranslDelete),
+                                msg = resources.getString(
+                                    R.string.msgDeleteTranslation,
+                                    bookInfo.bookName,
+                                    bookInfo.authorName
+                                ),
+                                btn = resources.getString(R.string.strLabelDelete),
+                                btnColor = ColorUtils.DANGER,
+                                action = {
+                                    onDelete()
+                                })
+                        },
+                        modifier = Modifier.size(40.dp),
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.dr_icon_delete),
+                            contentDescription = stringResource(R.string.strLabelDelete),
+                            tint = colorScheme.error,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
         }

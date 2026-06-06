@@ -187,6 +187,7 @@ class QuranTranslationFactory(private val context: Context) : Closeable {
                 lastUpdated = cursor.getLong(
                     cursor.getColumnIndexOrThrow(QuranTranslInfoEntry.COL_LAST_UPDATED)
                 )
+                version = lastUpdated
                 downloadPath = cursor.getString(
                     cursor.getColumnIndexOrThrow(QuranTranslInfoEntry.COL_DOWNLOAD_PATH)
                 )
