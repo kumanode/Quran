@@ -54,7 +54,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.quranapp.android.compose.utils.preferences.DataStoreManager
 import com.quranapp.android.R
 import com.quranapp.android.components.reader.ChapterVersePair
 import com.quranapp.android.compose.components.common.Loader
@@ -62,6 +61,7 @@ import com.quranapp.android.compose.components.reader.LocalReaderViewModel
 import com.quranapp.android.compose.components.reader.QuranWordText
 import com.quranapp.android.compose.components.reader.ReaderProvider
 import com.quranapp.android.compose.theme.alpha
+import com.quranapp.android.compose.utils.preferences.DataStoreManager
 import com.quranapp.android.compose.utils.preferences.ReaderPreferences
 import com.quranapp.android.db.ExternalQuranDatabase
 import com.quranapp.android.db.relations.VerseWithDetails
@@ -267,7 +267,7 @@ private fun SpotlightVersePanel(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .verticalScroll(scrollState)
-                                    .padding(24.dp),
+                                    .padding(horizontal = 24.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Center,
                             ) {

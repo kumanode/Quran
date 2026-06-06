@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.quranapp.android.R
+import com.quranapp.android.compose.components.dialogs.SimpleTooltip
 import com.quranapp.android.compose.components.player.dialogs.AudioEndBehaviour
 import com.quranapp.android.compose.components.player.dialogs.AudioEndBehaviourSheet
 import com.quranapp.android.compose.components.player.dialogs.AudioOption
@@ -79,10 +80,10 @@ import com.quranapp.android.compose.theme.alpha
 import com.quranapp.android.compose.utils.LocalAppLocale
 import com.quranapp.android.compose.utils.formattedStringResource
 import com.quranapp.android.compose.utils.preferences.RecitationPreferences
-import com.quranapp.android.utils.Log
 import com.quranapp.android.utils.mediaplayer.RecitationController
 import com.quranapp.android.utils.mediaplayer.RecitationModelManager
 import com.quranapp.android.utils.mediaplayer.RecitationServiceState
+import com.quranapp.android.utils.reader.factory.ReaderFactory
 import com.quranapp.android.utils.univ.formatDuration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -104,6 +105,7 @@ fun ExpandedPlayer(
     isLoading: Boolean,
     controller: RecitationController,
     onCollapse: () -> Unit,
+    onSyncRequest: ((forceJump: Boolean) -> Unit)?,
 ) {
     val verse = state.currentVerse
 
@@ -113,6 +115,7 @@ fun ExpandedPlayer(
         initialPage = mode.ordinal,
         pageCount = { ExpandedPlayerMode.entries.size },
     )
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var spotlightHeaderVisible by remember { mutableStateOf(true) }
     val headerVisibilityProgress by animateFloatAsState(
@@ -198,6 +201,10 @@ fun ExpandedPlayer(
                         scope.launch { pagerState.animateScrollToPage(selectedMode.ordinal) }
                     },
                     onCollapse = onCollapse,
+                    onOpenInReader = {
+                        if (onSyncRequest != null) onSyncRequest(true)
+                        else ReaderFactory.startVerse(context, verse.chapterNo, verse.verseNo)
+                    }
                 )
             }
 
@@ -337,7 +344,10 @@ fun ExpandedPlayer(
 
 @Composable
 private fun ExpandedPlayerHeader(
-    mode: ExpandedPlayerMode, onModeChange: (ExpandedPlayerMode) -> Unit, onCollapse: () -> Unit
+    mode: ExpandedPlayerMode,
+    onModeChange: (ExpandedPlayerMode) -> Unit,
+    onCollapse: () -> Unit,
+    onOpenInReader: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier
@@ -360,6 +370,24 @@ private fun ExpandedPlayerHeader(
             selected = mode,
             onSelect = onModeChange,
         )
+
+        SimpleTooltip(
+            stringResource(R.string.strLabelOpenInReader)
+        ) {
+            IconButton(
+                onClick = {
+                    onOpenInReader()
+                    onCollapse()
+                },
+            ) {
+                Icon(
+                    painterResource(R.drawable.dr_icon_open),
+                    contentDescription = stringResource(R.string.strLabelOpenInReader),
+                    modifier = Modifier.size(22.dp),
+                    tint = PlayerContentColor,
+                )
+            }
+        }
     }
 }
 
@@ -371,7 +399,7 @@ private fun RowScope.ModeTabs(
 ) {
     Box(
         Modifier.weight(1f),
-        contentAlignment = Alignment.CenterEnd,
+        contentAlignment = Alignment.Center,
     ) {
         Row(
             modifier = Modifier

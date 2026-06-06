@@ -59,7 +59,7 @@ val tightTextStyle = TextStyle(
     )
 )
 
-private val platformTextStyle = PlatformTextStyle(false)
+private val platformTextStyle = PlatformTextStyle(true)
 
 @Composable
 fun getAppTypography(): Typography {

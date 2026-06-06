@@ -90,7 +90,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReaderScreen(params: ReaderLaunchParams) {
+fun ReaderScreen(
+    params: ReaderLaunchParams,
+    launchRequestKey: Any? = params.toInitSignature(),
+) {
     val readerVm = viewModel<ReaderViewModel>()
 
     val context = LocalContext.current
@@ -103,7 +106,7 @@ fun ReaderScreen(params: ReaderLaunchParams) {
 
     val isDark = ThemeUtils.observeDarkTheme()
 
-    val coroutineScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
     var playerVerseSyncPref by readerVm.playerVerseSync
     var isSyncing by rememberSaveable { mutableStateOf(false) }
@@ -133,7 +136,7 @@ fun ReaderScreen(params: ReaderLaunchParams) {
         isFullscreen = false
     }
 
-    LaunchedEffect(params) {
+    LaunchedEffect(launchRequestKey) {
         isSyncing = false
         readerVm.initReaderIfNeeded(params)
     }
@@ -243,12 +246,12 @@ fun ReaderScreen(params: ReaderLaunchParams) {
                 barsCollapsedFraction = scrollBehavior.state.collapsedFraction,
                 playerVisibilityState = playerVisibilityState,
                 isSyncing = syncIndicatorLocked,
-                onSyncRequest = {
+                onSyncRequest = { forceJump ->
                     val willSync = !playerVerseSyncPref
                     playerVerseSyncPref = willSync
 
-                    if (willSync) {
-                        coroutineScope.launch { readerVm.syncToPlayingVerse() }
+                    if (willSync || forceJump) {
+                        scope.launch { readerVm.syncToPlayingVerse() }
                     }
                 }
             )

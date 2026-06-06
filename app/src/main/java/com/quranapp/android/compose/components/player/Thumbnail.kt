@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.semantics.Role
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.quranapp.android.R
 import com.quranapp.android.components.reader.ChapterVersePair
@@ -54,6 +55,7 @@ import kotlinx.coroutines.withContext
 fun ExtendedThumbnail(
     verse: ChapterVersePair,
     modifier: Modifier = Modifier,
+    onOpenInReader: (() -> Unit)? = null,
 ) {
     val displayVerse = verse.takeIf { it.isValid } ?: ChapterVersePair(1, 1)
     val headerShape = RoundedCornerShape(32.dp)
@@ -237,6 +239,41 @@ fun ExtendedThumbnail(
                         contentDescription = null,
                         tint = Color.White,
                         modifier = Modifier.size(14.dp)
+                    )
+                }
+            }
+        }
+
+        if (onOpenInReader != null) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(horizontalPadding, verticalPadding)
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(Color.White.copy(alpha = 0.12f))
+                    .border(1.dp, Color.White.copy(alpha = 0.10f), RoundedCornerShape(999.dp))
+                    .clickable(
+                        role = Role.Button,
+                        onClick = onOpenInReader,
+                    )
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                ) {
+                    Icon(
+                        painterResource(R.drawable.dr_icon_read_quran),
+                        contentDescription = stringResource(R.string.strLabelOpenInReader),
+                        modifier = Modifier.size(14.dp),
+                        tint = Color.White.copy(alpha = 0.88f),
+                    )
+                    Text(
+                        text = stringResource(R.string.strLabelOpenInReader),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White.copy(alpha = 0.88f),
+                        maxLines = 1,
                     )
                 }
             }

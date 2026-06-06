@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class ActivityReader : BaseActivity() {
     private val readerVm: ReaderViewModel by viewModels()
     val intentFlow = MutableStateFlow<Intent?>(null)
+    private val launchRequestIdFlow = MutableStateFlow(0L)
 
     override fun getLayoutResource() = 0
 
@@ -36,14 +37,17 @@ class ActivityReader : BaseActivity() {
         })
 
         intentFlow.value = intent
+        launchRequestIdFlow.value += 1L
 
         setContent {
             val currentIntent by intentFlow.collectAsState()
+            val launchRequestId by launchRequestIdFlow.collectAsState()
+            val params = resolveReaderLaunchParams(currentIntent)
 
             QuranAppTheme {
                 ReaderScreen(
-                    resolveReaderLaunchParams(currentIntent)
-                    // ReaderLaunchParams(ReaderIntentData.FullChapter(1))
+                    params = params,
+                    launchRequestKey = launchRequestId,
                 )
             }
         }
@@ -59,6 +63,7 @@ class ActivityReader : BaseActivity() {
 
         setIntent(intent)
         intentFlow.value = intent
+        launchRequestIdFlow.value += 1L
     }
 
     private fun resolveReaderLaunchParams(intent: Intent?): ReaderLaunchParams {

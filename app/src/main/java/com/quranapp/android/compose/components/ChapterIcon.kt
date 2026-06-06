@@ -2,12 +2,13 @@ package com.quranapp.android.compose.components
 
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import com.quranapp.android.compose.theme.fontSurah
@@ -40,6 +41,11 @@ fun ChapterIcon(
         fontFamily = fontSurah,
         fontSize = fontSize,
         fontWeight = FontWeight.Normal,
+        style = TextStyle(
+            platformStyle = PlatformTextStyle(
+                includeFontPadding = false,
+            ),
+        )
     )
 }
 

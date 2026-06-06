@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.quranapp.android.components.reader.ChapterVersePair
 import com.quranapp.android.utils.mediaplayer.RecitationController
 import com.quranapp.android.utils.mediaplayer.RecitationServiceState
 import com.quranapp.android.utils.univ.ErrorEvent
@@ -114,7 +115,7 @@ fun RecitationPlayerSheet(
         MiniPlayerVisibility.ALWAYS_SHOWN
     ),
     isSyncing: Boolean = false,
-    onSyncRequest: (() -> Unit)? = null,
+    onSyncRequest: ((forceJump: Boolean) -> Unit)? = null,
 ) {
     val viewModel = viewModel<RecitationPlayerViewModel>()
     val context = LocalContext.current
@@ -208,7 +209,7 @@ private fun PlayerContainer(
     isPlaying: Boolean,
     isLoading: Boolean,
     isSyncing: Boolean,
-    onSyncRequest: (() -> Unit)?,
+    onSyncRequest: ((forceJump: Boolean) -> Unit)?,
     onDismiss: () -> Unit,
     canDismiss: Boolean,
 ) {
@@ -334,6 +335,7 @@ private fun PlayerContainer(
                             isLoading = isLoading,
                             controller = controller,
                             onCollapse = { onExpandedChange(false) },
+                            onSyncRequest = onSyncRequest,
                         )
                     }
                 }

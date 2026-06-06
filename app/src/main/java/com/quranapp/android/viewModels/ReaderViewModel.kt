@@ -152,11 +152,11 @@ class ReaderViewModel(application: Application) : ReaderProviderViewModel(applic
 
     init {
         controller.connect()
-        
+
         viewModelScope.launch {
             val code = ReaderPreferences.getQuranScript()
             val variant = ReaderPreferences.getQuranScriptVariant()
-           
+
             _mushafSession.update {
                 it.copy(
                     layout = QuranScript(code, variant),
@@ -261,7 +261,17 @@ class ReaderViewModel(application: Application) : ReaderProviderViewModel(applic
             }
         }
 
-        if (!shouldInit) return
+        if (!shouldInit && !isReaderAlreadyAt(params.data)) {
+            shouldInit = true
+        }
+
+        if (!shouldInit) {
+            val initialVerse = params.data.initialVerse
+            if (initialVerse != null) {
+                requestVerseNavigation(initialVerse.chapterNo, initialVerse.verseNo)
+            }
+            return
+        }
 
 
         try {
@@ -273,6 +283,33 @@ class ReaderViewModel(application: Application) : ReaderProviderViewModel(applic
                 }
             }
             throw t
+        }
+    }
+
+    private fun isReaderAlreadyAt(data: ReaderIntentData): Boolean {
+        val currentViewType = _uiState.value.viewType
+
+        return when (data) {
+            is ReaderIntentData.FullChapter -> {
+                (currentViewType as? ReaderViewType.Chapter)?.chapterNo == data.chapterNo
+            }
+
+            is ReaderIntentData.FullJuz -> {
+                (currentViewType as? ReaderViewType.Juz)?.juzNo == data.juzNo
+            }
+
+            is ReaderIntentData.FullHizb -> {
+                (currentViewType as? ReaderViewType.Hizb)?.hizbNo == data.hizbNo
+            }
+
+            is ReaderIntentData.MushafPage -> {
+                val currentPageNo = _mushafSession.value.currentPageNo
+                if (data.pageNo > 0) {
+                    currentPageNo == data.pageNo
+                } else {
+                    (currentViewType as? ReaderViewType.Chapter)?.chapterNo == data.fallbackChapterNo
+                }
+            }
         }
     }
 
