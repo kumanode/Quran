@@ -218,13 +218,16 @@ class SessionPlayer(
 
             plan.seekToVirtualPosition(exoPlayer, target)
         } else {
-            val d = duration
-            val upper = if (d == C.TIME_UNSET || d < 0) Long.MAX_VALUE else d
+            // Use raw ExoPlayer duration here.
+            // On cold start (before prepare), wrapper duration is normalized to 0,
+            // which would incorrectly clamp absolute seeks to 0.
+            val d = exoPlayer.duration
+            val upper = if (d == C.TIME_UNSET || d <= 0L) Long.MAX_VALUE else d
 
             val target = if (isRelative) {
                 val delta =
                     if (amountOrDirection == ACTION_SEEK_RIGHT) SEEK_STEP_MS else -SEEK_STEP_MS
-                (currentPosition + delta).coerceIn(0L, upper)
+                (exoPlayer.currentPosition + delta).coerceIn(0L, upper)
             } else {
                 amountOrDirection.coerceIn(0L, upper)
             }

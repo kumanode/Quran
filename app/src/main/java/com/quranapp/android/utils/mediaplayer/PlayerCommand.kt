@@ -21,16 +21,20 @@ data class StartCommand(
 ) : BasePlayerCommand(ACTION) {
     override fun toBundle(): Bundle = Bundle().apply {
         if (verse != null) {
-            putSerializable("verse", verse)
+            putInt(KEY_CHAPTER, verse.chapterNo)
+            putInt(KEY_VERSE, verse.verseNo)
         }
     }
 
     companion object {
         const val ACTION = "START"
+        private const val KEY_CHAPTER = "chapterNo"
+        private const val KEY_VERSE = "verseNo"
 
         fun fromBundle(bundle: Bundle): StartCommand? {
-            val verse = bundle.serializableExtra<ChapterVersePair>("verse")
-            return StartCommand(verse)
+            val chapterNo = bundle.getInt(KEY_CHAPTER, -1)
+            val verseNo = bundle.getInt(KEY_VERSE, -1)
+            return StartCommand(ChapterVersePair(chapterNo, verseNo).takeIf { it.isValid })
         }
     }
 }

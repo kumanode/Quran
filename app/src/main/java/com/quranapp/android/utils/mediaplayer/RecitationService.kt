@@ -68,7 +68,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 
 @OptIn(UnstableApi::class)
 class RecitationService : MediaLibraryService() {
@@ -1296,7 +1295,10 @@ class RecitationService : MediaLibraryService() {
     private fun <T : BasePlayerCommand> reduce(cmd: T) = scoped {
         when (cmd) {
             is StartCommand -> {
-                val verse = cmd.verse ?: state.value.currentVerse
+                val verse = cmd.verse
+                    ?: state.value.currentVerse.takeIf { it.isValid }
+                    ?: RecitationPreferences.getLastPlayedVerse()
+                    ?: ChapterVersePair(1, 1)
                 playVerse(verse.chapterNo, verse.verseNo)
             }
 

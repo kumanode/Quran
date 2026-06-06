@@ -55,15 +55,16 @@ fun ExtendedThumbnail(
     verse: ChapterVersePair,
     modifier: Modifier = Modifier,
 ) {
+    val displayVerse = verse.takeIf { it.isValid } ?: ChapterVersePair(1, 1)
     val headerShape = RoundedCornerShape(32.dp)
     val viewModel = viewModel<RecitationPlayerViewModel>()
 
     var showChapterVerseNavigator by rememberSaveable { mutableStateOf(false) }
     var chapterName by remember { mutableStateOf("") }
 
-    LaunchedEffect(verse.chapterNo) {
+    LaunchedEffect(displayVerse.chapterNo) {
         chapterName = withContext(Dispatchers.IO) {
-            viewModel.repository.getChapterName(verse.chapterNo)
+            viewModel.repository.getChapterName(displayVerse.chapterNo)
         }
     }
 
@@ -187,7 +188,7 @@ fun ExtendedThumbnail(
                         top = chapterIconInset,
                         bottom = chapterIconBottomInset,
                     ),
-                    chapterNo = verse.chapterNo,
+                    chapterNo = displayVerse.chapterNo,
                     fontSize = chapterIconSize,
                     color = PlayerContentColor,
                 )
@@ -225,7 +226,7 @@ fun ExtendedThumbnail(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = formattedStringResource(R.string.strLabelVerseNo, verse.verseNo),
+                        text = formattedStringResource(R.string.strLabelVerseNo, displayVerse.verseNo),
                         color = Color.White.copy(alpha = 0.88f),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold
@@ -245,8 +246,8 @@ fun ExtendedThumbnail(
     ChapterVerseNavigator(
         isOpen = showChapterVerseNavigator,
         onDismiss = { showChapterVerseNavigator = false },
-        selectedChapterNo = verse.chapterNo,
-        selectedVerseNos = setOf(verse.verseNo),
+        selectedChapterNo = displayVerse.chapterNo,
+        selectedVerseNos = setOf(displayVerse.verseNo),
         onVerseSelected = { chapterNo, verseNo ->
             viewModel.controller.start(ChapterVersePair(chapterNo, verseNo))
         },

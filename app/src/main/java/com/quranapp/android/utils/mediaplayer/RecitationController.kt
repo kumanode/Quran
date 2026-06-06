@@ -125,6 +125,7 @@ class RecitationController private constructor(private val appContext: Context) 
                 applyPlaybackStateForBuffering(controller?.playbackState ?: Player.STATE_IDLE)
 
                 _isConnected.value = true
+                handler.post { executePendingCallbacks() }
             } catch (e: Exception) {
                 Log.saveError(e, "RecitationController.connect")
                 _isConnected.value = false

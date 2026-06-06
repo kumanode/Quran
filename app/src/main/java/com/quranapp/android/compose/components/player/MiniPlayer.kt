@@ -51,6 +51,7 @@ import com.quranapp.android.compose.components.dialogs.SimpleTooltip
 import com.quranapp.android.compose.theme.alpha
 import com.quranapp.android.compose.utils.formattedStringResource
 import com.quranapp.android.db.DatabaseProvider
+import com.quranapp.android.components.reader.ChapterVersePair
 import com.quranapp.android.utils.mediaplayer.RecitationController
 import com.quranapp.android.utils.mediaplayer.RecitationModelManager
 import com.quranapp.android.utils.mediaplayer.RecitationServiceState
@@ -73,7 +74,7 @@ fun MiniPlayer(
 ) {
     val context = LocalContext.current
 
-    val verse = state.currentVerse
+    val verse = state.currentVerse.takeIf { it.isValid } ?: ChapterVersePair(1, 1)
     val repository = remember(context) { DatabaseProvider.getQuranRepository(context) }
     var chapterName by remember { mutableStateOf("") }
 

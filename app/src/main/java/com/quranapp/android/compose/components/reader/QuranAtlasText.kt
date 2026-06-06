@@ -117,15 +117,29 @@ fun QuranAtlasText(
                 val texture = bundle.textureForGlyph(g)
 
                 if (texture != null) {
+                    val srcX = g.x
+                    val srcY = g.y
+                    val srcW = g.w
+                    val srcH = g.h
+
+                    if (
+                        srcW <= 0 ||
+                        srcH <= 0 ||
+                        srcX < 0 ||
+                        srcY < 0 ||
+                        srcX + srcW > texture.width ||
+                        srcY + srcH > texture.height
+                    ) continue
+
+                    val dstW = (srcW * layout.glyphScale).roundToInt().coerceAtLeast(1)
+                    val dstH = (srcH * layout.glyphScale).roundToInt().coerceAtLeast(1)
+
                     drawImage(
                         image = texture,
-                        srcOffset = IntOffset(g.x, g.y),
-                        srcSize = IntSize(g.w, g.h),
+                        srcOffset = IntOffset(srcX, srcY),
+                        srcSize = IntSize(srcW, srcH),
                         dstOffset = IntOffset(d.x.roundToInt(), d.y.roundToInt()),
-                        dstSize = IntSize(
-                            (g.w * layout.glyphScale).roundToInt(),
-                            (g.h * layout.glyphScale).roundToInt()
-                        ),
+                        dstSize = IntSize(dstW, dstH),
                         colorFilter = colorFilter
                     )
                 }

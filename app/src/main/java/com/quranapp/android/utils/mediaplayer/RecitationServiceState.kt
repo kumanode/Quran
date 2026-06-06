@@ -25,7 +25,7 @@ data class PlayerSettings(
 data class AudioResolutionRequest(val chapterNo: Int, val settings: PlayerSettings)
 
 data class RecitationServiceState(
-    val currentVerse: ChapterVersePair = ChapterVersePair(1, 1),
+    val currentVerse: ChapterVersePair = ChapterVersePair(-1, -1),
     /** Helps in indiacating if the player is resolving and also for which chapter no */
     val resolvingChapterNo: Int? = null,
     /** 0–100 while chapter audio is downloading from the network; null otherwise. */

@@ -24,17 +24,6 @@ class QuranAtlasTextureStore(
     private val cache = object : LruCache<Int, QuranAtlasTexture>(cacheSizeBytes()) {
         override fun sizeOf(key: Int, value: QuranAtlasTexture): Int =
             value.bitmap.allocationByteCount
-
-        override fun entryRemoved(
-            evicted: Boolean,
-            key: Int,
-            oldValue: QuranAtlasTexture,
-            newValue: QuranAtlasTexture?,
-        ) {
-            if (oldValue.bitmap != newValue?.bitmap) {
-                oldValue.bitmap.recycle()
-            }
-        }
     }
 
     val size: Int
