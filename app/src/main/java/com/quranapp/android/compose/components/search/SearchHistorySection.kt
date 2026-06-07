@@ -164,7 +164,7 @@ fun SearchEmptyScrollContent(
                 SearchHistoryRow(
                     entry = entry,
                     onClick = {
-                        viewModel.recordSearchQuery(entry.text)
+                        viewModel.commitSpecificQuery(entry.text)
                         viewModel.onQueryChange(entry.text)
                     },
                     onRemove = { viewModel.removeSearchHistory(entry.id) },
@@ -278,23 +278,23 @@ fun SearchTipsCard(
                 modifier = Modifier.padding(vertical = 16.dp),
             ) {
                 TipRow("2:255", stringResource(R.string.searchTipDirectVerse)) { example ->
-                    viewModel.recordSearchQuery(example)
+                    viewModel.commitSpecificQuery(example)
                     viewModel.onQueryChange(example)
                 }
                 TipRow("baqarah", stringResource(R.string.searchTipChapter)) { example ->
-                    viewModel.recordSearchQuery(example)
+                    viewModel.commitSpecificQuery(example)
                     viewModel.onQueryChange(example)
                 }
                 TipRow("30", stringResource(R.string.searchTipDirectJuz)) { example ->
-                    viewModel.recordSearchQuery(example)
+                    viewModel.commitSpecificQuery(example)
                     viewModel.onQueryChange(example)
                 }
                 TipRow("mercy", stringResource(R.string.searchTipTranslation)) { example ->
-                    viewModel.recordSearchQuery(example)
+                    viewModel.commitSpecificQuery(example)
                     viewModel.onQueryChange(example)
                 }
                 TipRow("الرحيم", stringResource(R.string.searchTipArabic)) { example ->
-                    viewModel.recordSearchQuery(example)
+                    viewModel.commitSpecificQuery(example)
                     viewModel.onQueryChange(example, true)
                 }
             }

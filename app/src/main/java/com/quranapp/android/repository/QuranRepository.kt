@@ -16,6 +16,7 @@ import com.quranapp.android.db.relations.NavigationUnit
 import com.quranapp.android.db.relations.NavigationUnitRange
 import com.quranapp.android.db.relations.SurahWithLocalizations
 import com.quranapp.android.db.relations.VerseWithDetails
+import com.quranapp.android.search.SearchNormalizer
 import com.quranapp.android.utils.quran.QuranMeta
 import com.quranapp.android.utils.reader.toQuranMushafId
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +28,7 @@ class QuranRepository(
 ) {
     companion object {
         private const val ARBITRARY_BATCH_CHUNK_SIZE = 400
+        private const val MAX_SURAH_SEARCH_RESULTS = 20
     }
 
     private val mushafDao get() = database.mushafDao()
@@ -653,18 +655,48 @@ class QuranRepository(
     ) = arabicSearchDao.pageMatchedAyahs(ftsQuery, limit, offset)
 
     suspend fun searchSurahNos(query: String): List<Int> {
-        try {
-            return surahSearchDao.searchSurahNos(
-                query
-                    .trim()
-                    .lowercase()
-                    .split(Regex("\\s+"))
-                    .filter { it.isNotBlank() }
-                    .joinToString(" ") { "$it*" }
-            ).map { it.surahNo }
-        } catch (_: Exception) {
-            return emptyList()
+        val raw = query.trim()
+        if (raw.isBlank()) return emptyList()
+
+        val normalized = SearchNormalizer.normalize(raw)
+            .replace("[^\\p{L}\\p{N}\\s]".toRegex(), " ")
+            .replace("\\s+".toRegex(), " ")
+            .trim()
+
+        val tokens = normalized.split(" ").filter { it.isNotBlank() }
+        val chapterNo = raw.toIntOrNull()?.takeIf { QuranMeta.isChapterValid(it) }
+        val ordered = linkedSetOf<Int>()
+
+        chapterNo?.let { ordered += it }
+
+        if (tokens.isNotEmpty()) {
+            val ftsQuery = tokens.joinToString(" ") { "$it*" }
+            val ftsOrQuery = if (tokens.size > 1) tokens.joinToString(" OR ") { "$it*" } else null
+
+            val ftsResults = try {
+                surahSearchDao.searchSurahNos(ftsQuery).map { it.surahNo }
+            } catch (_: Exception) {
+                emptyList()
+            }
+
+            ordered += ftsResults.filter { QuranMeta.isChapterValid(it) }
+
+            if (ordered.size < MAX_SURAH_SEARCH_RESULTS && ftsOrQuery != null) {
+                val ftsOrResults = try {
+                    surahSearchDao.searchSurahNos(ftsOrQuery).map { it.surahNo }
+                } catch (_: Exception) {
+                    emptyList()
+                }
+                ordered += ftsOrResults.filter { QuranMeta.isChapterValid(it) }
+            }
+
+            if (ordered.size < MAX_SURAH_SEARCH_RESULTS) {
+                val likeResults = surahSearchDao.searchSurahNosByAlias(normalized).map { it.surahNo }
+                ordered += likeResults.filter { QuranMeta.isChapterValid(it) }
+            }
         }
+
+        return ordered.take(MAX_SURAH_SEARCH_RESULTS)
     }
 
     suspend fun searchSurahs(query: String): List<SurahWithLocalizations> {

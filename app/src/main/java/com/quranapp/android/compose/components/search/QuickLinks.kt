@@ -58,7 +58,7 @@ fun QuickLinks(viewModel: QuranSearchViewModel) {
                     CompactQuickLinkCard(
                         item = item,
                         onClick = {
-                            viewModel.recordCurrentSearchQuery()
+                            viewModel.commitOnIntentionalOutcome()
 
                             when (item) {
                                 is QuickLinkItem.Verse -> {

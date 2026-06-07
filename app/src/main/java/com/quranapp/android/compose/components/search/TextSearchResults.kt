@@ -105,7 +105,7 @@ fun TextSearchResults(
             val result = results[it] ?: return@items
 
             TextSearchResultCard(result) {
-                viewModel.recordCurrentSearchQuery()
+                viewModel.commitOnIntentionalOutcome()
 
                 quickRefData = QuickReferenceData(
                     chapterNo = result.chapterNo,

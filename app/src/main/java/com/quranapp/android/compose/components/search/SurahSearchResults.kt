@@ -56,7 +56,7 @@ fun SurahSearchResults(
             ChapterCard(
                 surah = it,
                 onClick = {
-                    viewModel.recordCurrentSearchQuery()
+                    viewModel.commitOnIntentionalOutcome()
                     ReaderFactory.startChapter(context, it.surah.surahNo)
                 },
             )

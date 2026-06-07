@@ -8,14 +8,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,7 +45,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -52,7 +56,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -72,7 +76,6 @@ import com.quranapp.android.compose.theme.alpha
 import com.quranapp.android.utils.univ.MessageUtils
 import com.quranapp.android.viewModels.QuranSearchViewModel
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @Composable
@@ -154,7 +157,7 @@ fun SearchScreen(
             SearchHistorySuggestionStrip(
                 suggestions = historySuggestions,
                 onSelect = { text ->
-                    viewModel.recordSearchQuery(text)
+                    viewModel.commitSpecificQuery(text)
                     viewModel.onQueryChange(text)
                 },
             )
@@ -182,6 +185,7 @@ fun SearchScreen(
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SearchBox(viewModel: QuranSearchViewModel) {
     val context = LocalContext.current
@@ -190,10 +194,27 @@ private fun SearchBox(viewModel: QuranSearchViewModel) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     var hasFocus by remember { mutableStateOf(false) }
+    var skipNextImeHideCommit by remember { mutableStateOf(false) }
     val bgColor = colorScheme.background
+    val imeVisible = WindowInsets.isImeVisible
 
     val query by viewModel.searchQuery.collectAsState()
     val quranTextEnabled by viewModel.quranTextEnabled.collectAsState()
+
+    LaunchedEffect(imeVisible, hasFocus) {
+        if (imeVisible) {
+            skipNextImeHideCommit = false
+            return@LaunchedEffect
+        }
+
+        if (hasFocus) {
+            if (skipNextImeHideCommit) {
+                skipNextImeHideCommit = false
+            } else {
+                viewModel.commitOnExplicitSubmit()
+            }
+        }
+    }
 
     OutlinedTextField(
         modifier = Modifier
@@ -283,6 +304,14 @@ private fun SearchBox(viewModel: QuranSearchViewModel) {
         },
         value = query,
         onValueChange = viewModel::onQueryChange,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(
+            onSearch = {
+                viewModel.commitOnExplicitSubmit()
+                skipNextImeHideCommit = true
+                keyboardController?.hide()
+            }
+        ),
         textStyle = MaterialTheme.typography.labelLarge,
         shape = MaterialTheme.shapes.medium,
         singleLine = true,
@@ -315,14 +344,6 @@ private fun ColumnScope.TabbedResults(viewModel: QuranSearchViewModel) {
     if (query.isBlank()) {
         SearchEmptyScrollContent(viewModel, Modifier.weight(1f))
         return
-    }
-
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }
-            .distinctUntilChanged()
-            .collect {
-                viewModel.recordCurrentSearchQuery()
-            }
     }
 
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()

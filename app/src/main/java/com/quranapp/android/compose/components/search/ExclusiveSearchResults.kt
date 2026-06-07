@@ -68,7 +68,7 @@ fun ExclusiveSearchResults(
             },
         ) { result ->
             ExclusiveSearchResultCard(result) {
-                viewModel.recordCurrentSearchQuery()
+                viewModel.commitOnIntentionalOutcome()
             }
         }
     }

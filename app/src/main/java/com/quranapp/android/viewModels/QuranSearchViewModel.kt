@@ -181,8 +181,7 @@ class QuranSearchViewModel(private val application: Application) : AndroidViewMo
         }
     }
 
-    // Call when the user commits a search outcome
-    fun recordSearchQuery(text: String) {
+    private fun commitSearchQuery(text: String) {
         val trimmed = text.trim()
         if (trimmed.isEmpty()) return
         viewModelScope.launch {
@@ -191,8 +190,16 @@ class QuranSearchViewModel(private val application: Application) : AndroidViewMo
         }
     }
 
-    fun recordCurrentSearchQuery() {
-        recordSearchQuery(_searchQuery.value)
+    fun commitOnExplicitSubmit() {
+        commitSearchQuery(_searchQuery.value)
+    }
+
+    fun commitOnIntentionalOutcome() {
+        commitSearchQuery(_searchQuery.value)
+    }
+
+    fun commitSpecificQuery(text: String) {
+        commitSearchQuery(text)
     }
 
     fun removeSearchHistory(id: Int) {
