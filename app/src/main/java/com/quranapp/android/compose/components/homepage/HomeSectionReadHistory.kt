@@ -1,6 +1,7 @@
 package com.quranapp.android.compose.components.homepage
 
 import android.content.Intent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +9,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,13 +24,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -80,11 +84,11 @@ fun HomeSectionReadHistory() {
             }
 
             else -> {
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                Column(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(recentHistories, key = { it.id }) { history ->
+                    recentHistories.take(3).forEach { history ->
                         ItemCard(
                             history = history,
                             chapterName = chapterNames.get(history.chapterNo).orEmpty(),
@@ -119,40 +123,69 @@ private fun ItemCard(
         ReadType.Hizb -> colorScheme.secondary
     }
 
-    Surface(
+    Box(
         modifier = Modifier
-            .height(100.dp)
-            .width(280.dp)
-            .clip(shapes.medium)
-            .border(1.dp, colorScheme.outlineVariant.alpha(0.5f), shapes.medium)
+            .fillMaxWidth()
+            .height(80.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .border(
+                width = 1.dp,
+                brush = Brush.horizontalGradient(
+                    listOf(
+                        accentColor.copy(alpha = 0.3f),
+                        colorScheme.outlineVariant.copy(alpha = 0.3f),
+                    )
+                ),
+                shape = RoundedCornerShape(24.dp),
+            )
+            .background(colorScheme.surfaceContainerLow)
             .clickable(onClick = onOpen),
-        color = colorScheme.surfaceContainer.alpha(0.75f),
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        // Subtle left accent strip
+        Box(
+            modifier = Modifier
+                .width(4.dp)
+                .fillMaxHeight()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            accentColor,
+                            accentColor.copy(alpha = 0.3f),
+                        )
+                    )
+                )
+                .align(Alignment.CenterStart),
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 16.dp, end = 14.dp, top = 12.dp, bottom = 12.dp),
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.Top,
             ) {
-                Surface(
-                    modifier = Modifier.size(42.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    color = colorScheme.surfaceVariant.copy(alpha = 0.55f),
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(accentColor.copy(alpha = 0.12f)),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            painter = painterResource(
-                                when (ReaderMode.fromValue(history.readerMode)) {
-                                    ReaderMode.Reading -> R.drawable.ic_mode_mushaf
-                                    ReaderMode.Translation -> R.drawable.ic_mode_translation
-                                    else -> R.drawable.ic_mode_verse
-                                }
-                            ),
-                            contentDescription = null,
-                            tint = accentColor,
-                            modifier = Modifier.size(18.dp),
-                        )
-                    }
+                    Icon(
+                        painter = painterResource(
+                            when (ReaderMode.fromValue(history.readerMode)) {
+                                ReaderMode.Reading -> R.drawable.ic_mode_mushaf
+                                ReaderMode.Translation -> R.drawable.ic_mode_translation
+                                else -> R.drawable.ic_mode_verse
+                            }
+                        ),
+                        contentDescription = null,
+                        tint = accentColor,
+                        modifier = Modifier.size(18.dp),
+                    )
                 }
 
                 Column(modifier = Modifier.weight(1f)) {
@@ -166,33 +199,27 @@ private fun ItemCard(
                     )
 
                     subtitle?.let {
+                        Spacer(Modifier.height(2.dp))
                         Text(
                             text = it,
-                            style = typography.bodyMedium.merge(tightTextStyle),
-                            color = colorScheme.onSurface.alpha(0.75f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(top = 4.dp),
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(top = 12.dp),
-                        contentAlignment = Alignment.BottomStart
-                    ) {
-                        Text(
-                            text = stringResource(R.string.strLabelContinueReading),
-                            style = typography.labelMedium.merge(tightTextStyle),
-                            color = colorScheme.onSurface.alpha(0.65f),
-                            fontWeight = FontWeight.Medium,
+                            style = typography.bodySmall.merge(tightTextStyle),
+                            color = colorScheme.onSurfaceVariant,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
                     }
                 }
             }
+
+            Spacer(Modifier.weight(1f))
+
+            Text(
+                text = stringResource(R.string.strLabelContinueReading),
+                style = typography.labelSmall.merge(tightTextStyle),
+                color = accentColor.alpha(0.8f),
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.align(Alignment.End),
+            )
         }
     }
 }

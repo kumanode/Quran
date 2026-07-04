@@ -209,7 +209,7 @@ internal fun VotdContent(
                         ) {
                             withStyle(
                                 SpanStyle(
-                                    color = Color.White.alpha(0.75f),
+                                    color = colors.onSurface.alpha(0.75f),
                                     fontStyle = FontStyle.Italic,
                                     fontSize = type.labelMedium.fontSize
                                 )
@@ -259,7 +259,7 @@ internal fun VotdContent(
         verse.verseNo..verse.verseNo
     ).collectAsStateWithLifecycle(false)
 
-    val iconTint = Color.White.alpha(0.7f)
+    val iconTint = colors.onSurface.alpha(0.7f)
 
     val recState = LocalRecitation.current
     val isVersePlaying = recState.isAnyPlaying && recState.playingVerse.doesEqual(verse)
@@ -297,10 +297,10 @@ internal fun VotdContent(
                         script = scriptCode,
                         sizeMultiplier = arabicTextMultiplier,
                         useSmallSize = true,
-                        isDark = true
+                        isDark = false
                     )
                 ).copy(
-                    color = Color.White
+                    color = colors.onSurface
                 )
             }
 
@@ -329,7 +329,7 @@ internal fun VotdContent(
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 8.dp),
                     text = translationText,
-                    color = Color.White,
+                    color = colors.onSurface,
                     textAlign = TextAlign.Center,
                 )
             }
@@ -337,7 +337,7 @@ internal fun VotdContent(
 
         HorizontalDivider(
             modifier = Modifier.padding(top = 8.dp),
-            color = Color.White.alpha(0.2f)
+            color = colors.outlineVariant
         )
 
         Row(
@@ -403,9 +403,9 @@ internal fun HomePremiumBannerContainer(
     val gradient = remember(colors) {
         Brush.linearGradient(
             colors = listOf(
-                Color.Black,
-                colors.primary,
-                Color.Black,
+                colors.primaryContainer.alpha(0.7f),
+                colors.surfaceContainerLow,
+                colors.primary.alpha(0.1f),
             )
         )
     }
@@ -413,24 +413,19 @@ internal fun HomePremiumBannerContainer(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(12.dp),
+            .padding(horizontal = 20.dp, vertical = 8.dp),
     ) {
         Box(
             modifier = Modifier
-                .clip(shapes.medium)
+                .clip(androidx.compose.foundation.shape.RoundedCornerShape(24.dp))
                 .animateContentSize()
+                .background(colors.surfaceContainerLow)
         ) {
             Box(
                 modifier = Modifier
                     .matchParentSize()
                     .background(gradient)
             )
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(Color.Black.alpha(0.8f))
-            )
-
             content()
         }
     }
@@ -450,7 +445,7 @@ internal fun HomePremiumHeaderPill(
     Surface(
         modifier = modifier.clip(RoundedCornerShape(999.dp)),
         shape = RoundedCornerShape(999.dp),
-        color = Color.White.copy(alpha = alpha),
+        color = colors.onSurface.copy(alpha = alpha),
         onClick = onClick ?: {},
         enabled = onClick != null
     ) {
@@ -463,7 +458,7 @@ internal fun HomePremiumHeaderPill(
                 Icon(
                     painter = painterResource(icon),
                     contentDescription = null,
-                    tint = Color.White.copy(alpha = contentAlpha),
+                    tint = colors.onSurface.copy(alpha = contentAlpha),
                     modifier = Modifier.size(16.dp),
                 )
             }
@@ -472,7 +467,7 @@ internal fun HomePremiumHeaderPill(
                 text = title,
                 style = typography.titleSmall.merge(tightTextStyle),
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White.copy(alpha = contentAlpha),
+                color = colors.onSurface.copy(alpha = contentAlpha),
             )
         }
     }

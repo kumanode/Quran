@@ -27,8 +27,8 @@ fun HomeScreen(modifier: Modifier) {
             .fillMaxSize()
             .background(colorScheme.background)
             .verticalScroll(rememberScrollState())
-            .padding(bottom = 64.dp)
-            .padding(bottom = MINI_PLAYER_HEIGHT),
+            .padding(bottom = MINI_PLAYER_HEIGHT)
+            .padding(bottom = 16.dp),
     ) {
         AppUpdateBanner()
         HomeResourceUpdatesBanner()

@@ -156,6 +156,8 @@
     <string name="titleEtiquetteVerses">Etiquette in Quran</string>
     <string name="strTitleFeaturedProphets">Prophets in Quran</string>
     <string name="strTitleMajorSins">Major Sins in Quran</string>
+    <string name="titleTajweedRules">Tajweed Rules</string>
+    <string name="theme_liquid_glass">Liquid Glass</string>
     <string name="strTitlePrivacyPolicy">Privacy Policy</string>
     <string name="strTitleFailed">Failed</string>
     <string name="strTitleSuccess">Success</string>
@@ -470,4 +472,81 @@
 
     <string name="recitationPlayer">Recitation Player</string>
     <string name="desc_recitation_player_widget">Control Quran recitation from your home screen</string>
+    <string name="tajweed_rule_1_title">Nun Sukun &amp; Tanwin</string>
+    <string name="tajweed_rule_1_desc">Rules regarding the pronunciation of Nun with no vowel or Tanwin.</string>
+    <string name="tajweed_rule_1_1_title">Idzhar Halqi</string>
+    <string name="tajweed_rule_1_1_desc">Read clearly without nasalization when meeting throat letters.</string>
+    <string name="tajweed_rule_1_1_example" translatable="false">مِنْ آيَاتِنَا ، مِنْ حَكِيمٍ</string>
+    <string name="tajweed_rule_1_2_title">Idgham Bighunnah</string>
+    <string name="tajweed_rule_1_2_desc">Merged with nasalization when meeting (ي، ن، م، و).</string>
+    <string name="tajweed_rule_1_2_example" translatable="false">مَنْ يَقُولُ ، مِنْ وَالٍ</string>
+    <string name="tajweed_rule_1_3_title">Idgham Bilaghunnah</string>
+    <string name="tajweed_rule_1_3_desc">Merged without nasalization when meeting (ل، ر).</string>
+    <string name="tajweed_rule_1_3_example" translatable="false">مِنْ لَدُنْ ، مِنْ رَبِّهِمْ</string>
+    <string name="tajweed_rule_1_4_title">Iqlab</string>
+    <string name="tajweed_rule_1_4_desc">Converting the sound into Mim with nasalization when meeting (ب).</string>
+    <string name="tajweed_rule_1_4_example" translatable="false">مِنْ بَعْدِ</string>
+    <string name="tajweed_rule_1_5_title">Ikhfa Haqiqi</string>
+    <string name="tajweed_rule_1_5_desc">Hidden with nasalization when meeting the remaining 15 letters.</string>
+    <string name="tajweed_rule_1_5_example" translatable="false">أَنْزَلَ ، مِنْ دُونِ</string>
+    <string name="tajweed_rule_2_title">Mim Sukun</string>
+    <string name="tajweed_rule_2_desc">Rules for pronouncing Mim with no vowel.</string>
+    <string name="tajweed_rule_2_1_title">Ikhfa Syafawi</string>
+    <string name="tajweed_rule_2_1_desc">Hidden with nasalization when meeting (ب).</string>
+    <string name="tajweed_rule_2_1_example" translatable="false">تَرْمِيهِمْ بِحِجَارَةٍ</string>
+    <string name="tajweed_rule_2_2_title">Idgham Mimi (Mutamathilain)</string>
+    <string name="tajweed_rule_2_2_desc">Merged with nasalization when meeting another (م).</string>
+    <string name="tajweed_rule_2_2_example" translatable="false">لَهُمْ مَثَلًا</string>
+    <string name="tajweed_rule_2_3_title">Idzhar Syafawi</string>
+    <string name="tajweed_rule_2_3_desc">Read clearly without nasalization when meeting letters other than Ba and Mim.</string>
+    <string name="tajweed_rule_2_3_example" translatable="false">أَلَمْ نَشْرَحْ ، عَلَيْهِمْ وَلَا</string>
+    <string name="tajweed_rule_3_title">Idgham (Assimilation)</string>
+    <string name="tajweed_rule_3_desc">Rules for merging identical, similar, or close letters.</string>
+    <string name="tajweed_rule_3_1_title">Idgham Mutamathilain</string>
+    <string name="tajweed_rule_3_1_desc">Merging two identical letters (same articulation point and characteristics).</string>
+    <string name="tajweed_rule_3_1_example" translatable="false">قَدْ دَخَلُوا ، يُدْرِكْكُمُ</string>
+    <string name="tajweed_rule_3_2_title">Idgham Mutajanisain</string>
+    <string name="tajweed_rule_3_2_desc">Merging two letters with the same articulation point but different characteristics.</string>
+    <string name="tajweed_rule_3_2_example" translatable="false">أُجِيبَتْ دَعْوَتُكُمَا</string>
+    <string name="tajweed_rule_3_3_title">Idgham Mutaqaribain</string>
+    <string name="tajweed_rule_3_3_desc">Merging two letters with close articulation points or characteristics.</string>
+    <string name="tajweed_rule_3_3_example" translatable="false">أَلَمْ نَخْلُقْكُمْ</string>
+    <string name="tajweed_rule_4_title">Madd (Elongation)</string>
+    <string name="tajweed_rule_4_desc">Rules for elongating vowel sounds.</string>
+    <string name="tajweed_rule_4_1_title">Madd Thabi\'i</string>
+    <string name="tajweed_rule_4_1_desc">The natural elongation (2 harakat) when a letter is followed by its corresponding vowel letter.</string>
+    <string name="tajweed_rule_4_1_example" translatable="false">نُوحِيهَا</string>
+    <string name="tajweed_rule_4_2_title">Madd Wajib Muttashil</string>
+    <string name="tajweed_rule_4_2_desc">When Madd Thabi\'i is followed by Hamzah in the same word (4-5 harakat).</string>
+    <string name="tajweed_rule_4_2_example" translatable="false">السَّمَاءِ</string>
+    <string name="tajweed_rule_4_3_title">Madd Ja\'iz Munfashil</string>
+    <string name="tajweed_rule_4_3_desc">When Madd Thabi\'i is followed by Hamzah in the next word (2, 4, or 5 harakat).</string>
+    <string name="tajweed_rule_4_3_example" translatable="false">إِنَّا أَنْزَلْنَاهُ</string>
+    <string name="tajweed_rule_4_4_title">Madd Arid Lissukun</string>
+    <string name="tajweed_rule_4_4_desc">When Madd Thabi\'i occurs before a letter made silent due to stopping (2, 4, or 6 harakat).</string>
+    <string name="tajweed_rule_4_4_example" translatable="false">الْعَالَمِينَ</string>
+    <string name="tajweed_rule_5_title">Hukum Ra</string>
+    <string name="tajweed_rule_5_desc">Rules for pronouncing the letter Ra thick (Tafkhim) or thin (Tarqiq).</string>
+    <string name="tajweed_rule_5_1_title">Ra Tafkhim</string>
+    <string name="tajweed_rule_5_1_desc">Pronounced heavily when Ra has Fathah or Dhammah.</string>
+    <string name="tajweed_rule_5_1_example" translatable="false">رَبَّنَا ، كَفَرُوا</string>
+    <string name="tajweed_rule_5_2_title">Ra Tarqiq</string>
+    <string name="tajweed_rule_5_2_desc">Pronounced lightly when Ra has Kasrah.</string>
+    <string name="tajweed_rule_5_2_example" translatable="false">رِزْقًا ، فِرْعَوْنَ</string>
+    <string name="tajweed_rule_6_title">Qalqalah</string>
+    <string name="tajweed_rule_6_desc">Echoing sound produced for letters (ق، ط، ب، ج، د) when they carry a Sukun.</string>
+    <string name="tajweed_rule_6_1_title">Qalqalah Sughra</string>
+    <string name="tajweed_rule_6_1_desc">Occurs in the middle of a word.</string>
+    <string name="tajweed_rule_6_1_example" translatable="false">يَقْطَعُونَ</string>
+    <string name="tajweed_rule_6_2_title">Qalqalah Kubra</string>
+    <string name="tajweed_rule_6_2_desc">Occurs at the end of a word due to stopping.</string>
+    <string name="tajweed_rule_6_2_example" translatable="false">الْفَلَقِ</string>
+    <string name="tajweed_rule_7_title">Gharib &amp; Special Rules</string>
+    <string name="tajweed_rule_7_desc">Unique recitations and punctuation marks in the Quran.</string>
+    <string name="tajweed_rule_7_1_title">Saktah</string>
+    <string name="tajweed_rule_7_1_desc">A brief breathless pause before continuing the recitation.</string>
+    <string name="tajweed_rule_7_1_example" translatable="false">مَرۡقَدِنَا ۜ هٰذَا</string>
+    <string name="tajweed_rule_7_2_title">Isymam</string>
+    <string name="tajweed_rule_7_2_desc">Rounding the lips without sound to indicate a hidden Dhammah.</string>
+    <string name="tajweed_rule_7_2_example" translatable="false">لَا تَأْمَنَّا</string>
 </resources>

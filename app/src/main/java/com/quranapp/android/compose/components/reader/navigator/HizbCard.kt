@@ -47,16 +47,18 @@ fun HizbCard(
     val firstSurah = hizb.ranges.firstOrNull()
     val lastSurah = hizb.ranges.lastOrNull()
 
+    val isLiquidGlass = com.quranapp.android.compose.utils.ThemeUtils.observeIsLiquidGlassEffect()
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(
             width = 1.dp,
-            color = if (isCurrent) colorScheme.primary else colorScheme.outlineVariant.copy(alpha = 0.4f)
+            color = if (isCurrent) colorScheme.primary else colorScheme.outlineVariant.copy(alpha = if (isLiquidGlass) 0.5f else 0.4f)
         )
     ) {
         Row(

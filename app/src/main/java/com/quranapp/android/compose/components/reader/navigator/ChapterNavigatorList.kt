@@ -1,5 +1,6 @@
 package com.quranapp.android.compose.components.reader.navigator
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,6 +48,7 @@ import com.quranapp.android.compose.components.common.Loader
 import com.quranapp.android.compose.components.common.SearchTextField
 import com.quranapp.android.compose.components.reader.ReaderMode
 import com.quranapp.android.compose.theme.alpha
+import com.quranapp.android.compose.utils.ThemeUtils
 import com.quranapp.android.compose.utils.formattedStringResource
 import com.quranapp.android.db.entities.quran.SurahEntity
 import com.quranapp.android.db.relations.SurahWithLocalizations
@@ -249,17 +251,23 @@ private fun ChapterVerseList(currentChapter: SurahEntity?, onVerseSelected: (Int
                 state = state
             ) {
                 items(filteredAyahs) { verseNo ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = colorScheme.surface
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-                    ) {
-                        Text(
-                            formattedStringResource(R.string.strLabelVerseNo, verseNo),
+                val isLiquidGlass = ThemeUtils.observeIsLiquidGlassEffect()
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = colorScheme.outlineVariant.copy(alpha = if (isLiquidGlass) 0.5f else 0.4f)
+                    ),
+                ) {
+                    Text(
+                        formattedStringResource(R.string.strLabelVerseNo, verseNo),
                             modifier = Modifier
                                 .clickable {
                                     onVerseSelected(currentChapter.surahNo, verseNo)

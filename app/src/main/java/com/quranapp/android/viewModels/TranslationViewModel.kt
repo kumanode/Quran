@@ -321,6 +321,13 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
                 translationGroups.add(groupModel)
             }
 
+            translationGroups.sortBy { it.langName }
+            val indonesianGroup = translationGroups.find { it.langCode == "id" }
+            if (indonesianGroup != null) {
+                translationGroups.remove(indonesianGroup)
+                translationGroups.add(0, indonesianGroup)
+            }
+
             translationGroups
         } finally {
             translFactory.close()

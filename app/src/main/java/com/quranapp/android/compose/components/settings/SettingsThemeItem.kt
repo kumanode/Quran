@@ -44,13 +44,13 @@ fun SettingsThemeItem(
                 colorScheme.primary.alpha(if (isSelected) 1f else 0.2f),
                 MaterialTheme.shapes.medium
             )
-            .background(if (isSelected) colorScheme.primary.alpha(0.2f) else colorScheme.surface)
+            .background(if (isSelected) colorScheme.primary.alpha(0.2f) else colorScheme.surfaceContainerHigh)
             .padding(PaddingValues(15.dp)),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = stringResource(id = themeItem.title),
-            color = colorScheme.primary,
+            color = if (isSelected) colorScheme.primary else colorScheme.onSurface,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.labelMedium,
         )

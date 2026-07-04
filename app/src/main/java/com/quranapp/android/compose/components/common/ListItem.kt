@@ -1,6 +1,7 @@
 package com.quranapp.android.compose.components.common
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,12 +33,15 @@ fun ListItem(
     trailing: (@Composable () -> Unit)? = null,
     onClick: () -> Unit
 ) {
+    val isLiquidGlass = com.quranapp.android.compose.utils.ThemeUtils.observeIsLiquidGlassEffect()
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
-            .shadow(2.dp)
-            .background(colorScheme.surface),
+            .then(if (isLiquidGlass) Modifier else Modifier.shadow(2.dp))
+            .background(colorScheme.surface)
+            .then(if (isLiquidGlass) Modifier.border(1.dp, colorScheme.outlineVariant.copy(alpha = 0.5f), MaterialTheme.shapes.medium) else Modifier),
     ) {
         Row(
             modifier = Modifier
@@ -101,6 +105,7 @@ fun ListItemContent(
                         alignment = LineHeightStyle.Alignment.Center,
                     )
                 ),
+                color = colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier
                     .alpha(0.75f),

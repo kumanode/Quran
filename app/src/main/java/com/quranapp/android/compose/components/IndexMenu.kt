@@ -56,6 +56,7 @@ import com.peacedesign.android.utils.AppBridge
 import com.quranapp.android.R
 import com.quranapp.android.activities.ActivityAbout
 import com.quranapp.android.activities.ActivityBookmark
+import com.quranapp.android.activities.ActivityDonate
 import com.quranapp.android.activities.ActivityExportImport
 import com.quranapp.android.activities.ActivitySettings
 import com.quranapp.android.activities.ActivityStorageCleanup
@@ -121,34 +122,13 @@ private fun getItems(): List<IndexMenuItemGroup> {
                         it.startActivity(Intent(it, ActivityAbout::class.java))
                     }
                 ),
-                IndexMenuItem(
-                    R.drawable.dr_icon_rate,
-                    R.string.strTitleRateApp,
-                    onClick = {
-                        AppBridge.newOpener(it).openPlayStore(null);
-                    }
-                ),
-                IndexMenuItem(
-                    R.drawable.dr_icon_share,
-                    R.string.strTitleShareApp,
-                    onClick = {
-                        shareApp(it)
-                    }
-                ),
-                IndexMenuItem(
-                    R.drawable.sunnahapp_logo_icon,
-                    R.string.strTitleDownloadSunnahApp,
-                    iconTint = colorScheme.primary,
-                    onClick = {
-                        AppBridge.newOpener(it).openPlayStore("com.alfaazplus.sunnah");
-                    }
-                ),
+
                 IndexMenuItem(
                     R.drawable.ic_donate,
                     R.string.donate,
                     iconTint = colorScheme.primary,
                     onClick = {
-                        InfoUtils.openDonationLink(it);
+                        it.startActivity(Intent(it, ActivityDonate::class.java))
                     }
                 ),
             )
@@ -333,16 +313,3 @@ private fun IndexMenuItemRow(
     }
 }
 
-private fun shareApp(ctx: Context) {
-    val sharer = AppBridge.newSharer(ctx)
-    sharer.setData(
-        ctx.getString(
-            R.string.strMsgShareApp,
-            AppBridge.preparePlayStoreLink(ctx, false, null)
-        )
-    )
-        .setPlatform(AppBridge.Platform.SYSTEM_SHARE)
-        .setChooserTitle(ctx.getString(R.string.strTitleShareApp))
-
-    sharer.share()
-}

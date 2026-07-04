@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -274,33 +273,31 @@ fun ReaderLayoutTranslationPageMode(
     }
 
 
-    SelectionContainer {
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .then(
-                    if (nestedScrollConnection == null) Modifier
-                    else Modifier.nestedScroll(nestedScrollConnection)
-                ),
-            contentPadding = PaddingValues(top = 16.dp, bottom = 240.dp),
-        ) {
-            items(
-                count = pageCount,
-                key = { index -> sessionLayout to index },
-            ) { pageIndex ->
-                val pageNo = pageIndex + 1
-                val item = translationPageItems[pageNo]
+    LazyColumn(
+        state = listState,
+        modifier = Modifier
+            .fillMaxSize()
+            .then(
+                if (nestedScrollConnection == null) Modifier
+                else Modifier.nestedScroll(nestedScrollConnection)
+            ),
+        contentPadding = PaddingValues(top = 16.dp, bottom = 240.dp),
+    ) {
+        items(
+            count = pageCount,
+            key = { index -> sessionLayout to index },
+        ) { pageIndex ->
+            val pageNo = pageIndex + 1
+            val item = translationPageItems[pageNo]
 
-                key(sessionLayout, pageIndex) {
-                    if (pageIndex > 0) {
-                        Spacer(Modifier.height(12.dp))
-                    }
-
-                    TranslationModePage(
-                        item = item,
-                    )
+            key(sessionLayout, pageIndex) {
+                if (pageIndex > 0) {
+                    Spacer(Modifier.height(12.dp))
                 }
+
+                TranslationModePage(
+                    item = item,
+                )
             }
         }
     }
@@ -346,6 +343,7 @@ private fun TranslationModePage(
     }
 
     val textDirection = if (isRtl) TextDirection.Rtl else TextDirection.Ltr
+    val isLiquidGlass = com.quranapp.android.compose.utils.ThemeUtils.observeIsLiquidGlassEffect()
 
     CompositionLocalProvider(
         LocalLayoutDirection provides if (isRtl) LayoutDirection.Rtl else {
@@ -362,7 +360,7 @@ private fun TranslationModePage(
                 1.dp,
                 colorScheme.outlineVariant,
             ),
-            shadowElevation = 1.dp
+            shadowElevation = if (isLiquidGlass) 0.dp else 1.dp
         ) {
             Box(
                 modifier = Modifier

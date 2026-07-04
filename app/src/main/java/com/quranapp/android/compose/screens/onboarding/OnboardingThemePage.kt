@@ -96,6 +96,17 @@ fun OnboardingThemePage() {
                     }
                 }
 
+                val isLiquidGlass = ThemeUtils.observeIsLiquidGlassEffect()
+                SwitchItem(
+                    title = R.string.theme_liquid_glass,
+                    subtitle = null,
+                    checked = isLiquidGlass,
+                ) {
+                    scope.launch {
+                        ThemeUtils.setIsLiquidGlassEffect(it)
+                    }
+                }
+
                 if (!dynamicColorSupported || !isDynamicColor) {
                     ListItemCategoryLabel(title = stringResource(R.string.theme_colors))
 

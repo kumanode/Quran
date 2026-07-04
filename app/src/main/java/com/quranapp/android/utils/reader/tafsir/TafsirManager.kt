@@ -96,9 +96,60 @@ object TafsirManager {
         val savedTafsirKey = ReaderPreferences.getTafsirId()
 
         try {
-            val availableTafsirsModel = JsonHelper.json.decodeFromString<AvailableTafsirsModel>(
+            var availableTafsirsModel = JsonHelper.json.decodeFromString<AvailableTafsirsModel>(
                 stringData
             )
+
+            // Inject id_kemenag as a local bundled tafsir
+            val updatedTafsirs = availableTafsirsModel.tafsirs.toMutableMap()
+            val idList = updatedTafsirs["id"]?.toMutableList() ?: mutableListOf()
+            if (idList.none { it.key == "id_kemenag" }) {
+                val indonesianTafsir = TafsirInfoModel(
+                    key = "id_kemenag",
+                    name = "Tafsir Kemenag",
+                    author = "Kemenag RI",
+                    langCode = "id",
+                    langName = "Indonesian"
+                )
+                indonesianTafsir.isDownloaded = true
+                idList.add(0, indonesianTafsir)
+                updatedTafsirs["id"] = idList
+                
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val dbHelper = com.quranapp.android.db.tafsir.QuranTafsirDBHelper(ctx)
+                        dbHelper.storeTafsirInfo(indonesianTafsir)
+                        
+                        val db = dbHelper.readableDatabase
+                        val count = android.database.DatabaseUtils.queryNumEntries(
+                            db, 
+                            com.quranapp.android.db.tafsir.QuranTafsirContract.QuranTafsirEntry.TABLE_NAME, 
+                            "${com.quranapp.android.db.tafsir.QuranTafsirContract.QuranTafsirEntry.COL_TAFSIR_KEY} = ?", 
+                            arrayOf("id_kemenag")
+                        )
+                        
+                        if (count < 6000) {
+                            val jsonStr = ctx.assets.open("tafsir/id_kemenag_mapped.json").bufferedReader().use { it.readText() }
+                            val mapped = org.json.JSONObject(jsonStr)
+                            val iter = mapped.keys()
+                            val tafsirs = mutableListOf<com.quranapp.android.api.models.tafsir.TafsirModel>()
+                            while (iter.hasNext()) {
+                                val key = iter.next()
+                                tafsirs.add(com.quranapp.android.api.models.tafsir.TafsirModel(
+                                    key = "id_kemenag",
+                                    verseKey = key,
+                                    verses = listOf(key),
+                                    text = mapped.getString(key)
+                                ))
+                            }
+                            dbHelper.storeTafsirs(tafsirs, "1.0", System.currentTimeMillis())
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            availableTafsirsModel = availableTafsirsModel.copy(tafsirs = updatedTafsirs)
 
             availableTafsirsModel.tafsirs.values.forEach { tafsirModels ->
                 tafsirModels.forEach { tafsirModel ->

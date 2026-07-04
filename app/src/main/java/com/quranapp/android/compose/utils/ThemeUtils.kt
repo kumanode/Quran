@@ -11,6 +11,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.compose.ui.graphics.Color
 import com.quranapp.android.compose.theme.colors.BaseColors
 import com.quranapp.android.compose.theme.colors.ThemeBlueColors
 import com.quranapp.android.compose.theme.colors.ThemeDefaultColors
@@ -34,6 +35,7 @@ object ThemeUtils {
     private val KEY_THEME_MODE = stringPreferencesKey("v2.theme_mode")
     private val KEY_THEME_COLOR = stringPreferencesKey("v2.theme_color")
     private val KEY_THEME_DYNAMIC_COLOR = booleanPreferencesKey("v2.theme_dynamic_color")
+    private val KEY_THEME_LIQUID_GLASS = booleanPreferencesKey("v2.theme_liquid_glass_effect")
 
     const val THEME_COLOR_DEFAULT = "default"
     const val THEME_COLOR_BLUE = "blue"
@@ -100,13 +102,25 @@ object ThemeUtils {
     }
 
     @Composable
+    fun observeIsLiquidGlassEffect(): Boolean {
+        // Fallback for migration: if color was liquid_glass, consider effect ON initially (DataStore returns false by default if not set).
+        // Since observe doesn't let us map easily here without breaking composition simplicity, we rely on the migration on startup or user toggle.
+        return DataStoreManager.observe(KEY_THEME_LIQUID_GLASS, false)
+    }
+
+    suspend fun setIsLiquidGlassEffect(isLiquidGlass: Boolean) {
+        DataStoreManager.write(KEY_THEME_LIQUID_GLASS, isLiquidGlass)
+    }
+
+    @Composable
     fun observeColorScheme(
         context: Context,
         isDarkTheme: Boolean = observeDarkTheme()
     ): ColorScheme {
         val themeColor = observeThemeColor()
         val isDynamicColor = observeIsDynamicColor()
-        return buildColorScheme(context, isDarkTheme, themeColor, isDynamicColor)
+        val isLiquidGlass = observeIsLiquidGlassEffect()
+        return buildColorScheme(context, isDarkTheme, themeColor, isDynamicColor, isLiquidGlass)
     }
 
     fun colorSchemeFromPreferences(context: Context, isDark: Boolean? = null): ColorScheme {
@@ -115,6 +129,7 @@ object ThemeUtils {
             isDark ?: isDarkTheme(context),
             DataStoreManager.read(KEY_THEME_COLOR, THEME_COLOR_DEFAULT),
             DataStoreManager.read(KEY_THEME_DYNAMIC_COLOR, DEFAULT_DYNAMIC_COLOR),
+            DataStoreManager.read(KEY_THEME_LIQUID_GLASS, false),
         )
     }
 
@@ -133,12 +148,12 @@ object ThemeUtils {
         isDarkTheme: Boolean,
         themeColor: String,
         isDynamicColor: Boolean,
+        isLiquidGlass: Boolean,
     ): ColorScheme {
         // Dynamic color is available on Android 12+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isDynamicColor) {
-            return if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(
-                context,
-            )
+            val scheme = if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            return if (isLiquidGlass) scheme.withLiquidGlass(isDarkTheme) else scheme
         }
 
         val preferredColor: BaseColors = when (themeColor) {
@@ -148,10 +163,27 @@ object ThemeUtils {
             THEME_COLOR_MONO -> ThemeMonoColors()
             THEME_COLOR_VIOLET -> ThemeVioletColors()
             THEME_COLOR_YELLOW -> ThemeYellowColors()
+            // Migration fallback
+            "liquid_glass" -> ThemeDefaultColors()
             else -> ThemeDefaultColors()
         }
 
-        return if (isDarkTheme) preferredColor.darkColors() else preferredColor.lightColors()
+        val scheme = if (isDarkTheme) preferredColor.darkColors() else preferredColor.lightColors()
+        return if (isLiquidGlass || themeColor == "liquid_glass") scheme.withLiquidGlass(isDarkTheme) else scheme
+    }
+
+    private fun ColorScheme.withLiquidGlass(isDarkTheme: Boolean): ColorScheme {
+        return copy(
+            background = Color.Transparent,
+            surface = surface.copy(alpha = if (isDarkTheme) 0.53f else 0.73f),
+            surfaceContainerLowest = surfaceContainerLowest.copy(alpha = if (isDarkTheme) 0.2f else 0.33f),
+            surfaceContainerLow = surfaceContainerLow.copy(alpha = if (isDarkTheme) 0.33f else 0.47f),
+            surfaceContainer = surfaceContainer.copy(alpha = if (isDarkTheme) 0.67f else 0.87f),
+            surfaceContainerHigh = surfaceContainerHigh.copy(alpha = if (isDarkTheme) 0.8f else 0.93f),
+            surfaceContainerHighest = surfaceContainerHighest.copy(alpha = if (isDarkTheme) 0.93f else 1f),
+            outline = outline.copy(alpha = if (isDarkTheme) 0.53f else 0.67f),
+            outlineVariant = outlineVariant.copy(alpha = if (isDarkTheme) 0.33f else 0.47f),
+        )
     }
 
     /**

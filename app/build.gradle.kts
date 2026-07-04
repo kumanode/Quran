@@ -23,7 +23,7 @@ android {
         versionCode = 23_11_11_142
         versionName = "2026.05.13.2"
 
-        resValue("string", "app_name", "QuranApp")
+        resValue("string", "app_name", "Quran")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -54,7 +54,7 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
 
-            resValue("string", "app_name", "QuranApp Debug")
+            resValue("string", "app_name", "Quran Debug")
 
             /* ---------------------------------------------------------------- */
             resValue("string", "cleartextTrafficPermitted", "true")
@@ -180,4 +180,9 @@ dependencies {
     implementation(libs.glance.appwidget)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    
+    // Solana Mobile Wallet Adapter
+    implementation("com.solanamobile:mobile-wallet-adapter-clientlib-ktx:2.1.0")
+    // Sol4k for building transactions and RPC calls
+    implementation("org.sol4k:sol4k:0.7.0")
 }

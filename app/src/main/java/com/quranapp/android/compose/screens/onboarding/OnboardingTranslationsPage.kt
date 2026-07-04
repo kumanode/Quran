@@ -315,6 +315,7 @@ private fun OnboardingTranslationRow(
                 text = bookInfo.bookName,
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
+                color = colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )

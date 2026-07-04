@@ -33,6 +33,7 @@ import com.quranapp.android.activities.reference.ActivityExclusiveVerses
 import com.quranapp.android.activities.reference.ActivityProphets
 import com.quranapp.android.activities.reference.ActivityQuranScience
 import com.quranapp.android.activities.reference.ActivityQuranicTopics
+import com.quranapp.android.activities.reference.ActivityTajweed
 import com.quranapp.android.compose.screens.quranictopics.QuranicTopicsStart
 import com.quranapp.android.compose.screens.reference.ExclusiveVersesScreenKind
 import com.quranapp.android.compose.theme.alpha
@@ -41,7 +42,9 @@ import com.quranapp.android.compose.theme.alpha
 fun HomeSectionVersesCollections() {
     val context = LocalContext.current
 
-    val entries = remember {
+    val appLocale = com.quranapp.android.compose.utils.LocalAppLocale.current
+
+    val entries = remember(appLocale) {
         listOf(
             VersesCollectionCard(
                 R.string.strTitleFeaturedDuas,
@@ -128,6 +131,14 @@ fun HomeSectionVersesCollections() {
                     )
                 )
             },
+            VersesCollectionCard(
+                R.string.titleTajweedRules,
+                R.drawable.dr_icon_quran_script,
+            ) {
+                context.startActivity(
+                    Intent(context, ActivityTajweed::class.java)
+                )
+            },
         )
     }
 
@@ -137,7 +148,7 @@ fun HomeSectionVersesCollections() {
             .padding(horizontal = 14.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        entries.chunked(2).forEach { rowItems ->
+        entries.chunked(3).forEach { rowItems ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -149,7 +160,7 @@ fun HomeSectionVersesCollections() {
                     )
                 }
 
-                if (rowItems.size == 1) {
+                repeat(3 - rowItems.size) {
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
@@ -172,11 +183,11 @@ private fun CollectionCard(
     Card(
         onClick = entry.onClick,
         modifier = modifier.height(120.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = colorScheme.surfaceContainer.alpha(0.9f)
+            containerColor = colorScheme.surfaceContainerLow
         ),
-        border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.1f))
+        border = BorderStroke(1.dp, colorScheme.outlineVariant.copy(alpha = 0.3f))
     ) {
         Box(
             modifier = Modifier
@@ -201,7 +212,7 @@ private fun CollectionCard(
                 maxLines = 2,
                 modifier = Modifier
                     .align(Alignment.BottomStart)
-                    .padding(end = 46.dp)
+                    .padding(end = 8.dp)
             )
         }
     }

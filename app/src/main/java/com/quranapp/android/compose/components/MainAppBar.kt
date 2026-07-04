@@ -1,18 +1,21 @@
 package com.quranapp.android.compose.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -20,35 +23,50 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quranapp.android.R
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainAppBar() {
-    TopAppBar(
-        modifier = Modifier.shadow(4.dp),
-        title = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.dr_logo),
-                    contentDescription = stringResource(R.string.app_name),
-                    tint = null,
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                Brush.horizontalGradient(
+                    listOf(
+                        colorScheme.primary,
+                        colorScheme.secondary.copy(alpha = 0.85f),
+                    )
                 )
+            )
+            .statusBarsPadding()
+            .padding(horizontal = 18.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.dr_logo),
+                contentDescription = stringResource(R.string.app_name),
+                tint = null,
+            )
 
-                Text(
-                    text = stringResource(R.string.app_name),
-                    style = typography.titleLarge.copy(
-                        fontFamily = FontFamily.Default
-                    ),
-                    color = colorScheme.onSurface,
-                    fontWeight = FontWeight.Black,
-                )
-            }
-        },
-        actions = {
+            Spacer(modifier = Modifier.width(2.dp))
+
+            Text(
+                text = stringResource(R.string.app_name),
+                style = typography.titleLarge.copy(
+                    fontFamily = FontFamily.Default
+                ),
+                color = colorScheme.onPrimary,
+                fontWeight = FontWeight.Black,
+            )
+        }
+
+        androidx.compose.runtime.CompositionLocalProvider(
+            androidx.compose.material3.LocalContentColor provides colorScheme.onPrimary,
+        ) {
             IndexMenuButton()
-        },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = colorScheme.surfaceContainer),
-    )
+        }
+    }
 }

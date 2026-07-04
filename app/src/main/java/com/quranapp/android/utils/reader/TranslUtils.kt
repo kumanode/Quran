@@ -34,6 +34,7 @@ object TranslUtils {
     const val TRANSL_SLUG_EN_SAHIH_INTERNATIONAL = "en_101_sahih-international"
     const val TRANSL_SLUG_EN_THE_CLEAR_QURAN = "en_102_the-clear-quran"
     const val TRANSL_SLUG_UR_JUNAGARHI = "ur_201_junagarhi"
+    const val TRANSL_SLUG_ID_INDONESIAN = "id_301_indonesian"
 
     private const val TRANSL_TRANSLITERATION_SLUG_PART = "transliteration"
 
@@ -69,6 +70,13 @@ object TranslUtils {
             defaultLangCode = "ur",
             defaultLangName = "Urdu",
             defaultDownloadPath = "prebuilt_translations/ur_junagarhi/ur_junagarhi.json",
+        ),
+        PrebuiltSpec(
+            slug = TRANSL_SLUG_ID_INDONESIAN,
+            manifestPath = "prebuilt_translations/id_indonesian/manifest.json",
+            defaultLangCode = "id",
+            defaultLangName = "Indonesian",
+            defaultDownloadPath = "prebuilt_translations/id_indonesian/id_indonesian.json",
         ),
     )
 

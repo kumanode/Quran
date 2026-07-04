@@ -27,22 +27,28 @@ import com.quranapp.android.compose.navigation.SettingRoutes
 import com.quranapp.android.utils.univ.Keys
 
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+
 private val enterTransition = slideInHorizontally(
     initialOffsetX = { fullWidth -> fullWidth },
-    animationSpec = tween(durationMillis = 100),
-)
+    animationSpec = tween(durationMillis = 300),
+) + fadeIn(animationSpec = tween(durationMillis = 300))
+
 private val exitTransition = slideOutHorizontally(
     targetOffsetX = { fullWidth -> -fullWidth },
-    animationSpec = tween(durationMillis = 100),
-)
+    animationSpec = tween(durationMillis = 300),
+) + fadeOut(animationSpec = tween(durationMillis = 300))
+
 private val popEnterTransition = slideInHorizontally(
     initialOffsetX = { fullWidth -> -fullWidth },
-    animationSpec = tween(durationMillis = 100),
-)
+    animationSpec = tween(durationMillis = 300),
+) + fadeIn(animationSpec = tween(durationMillis = 300))
+
 private val popExitTransition = slideOutHorizontally(
     targetOffsetX = { fullWidth -> fullWidth },
-    animationSpec = tween(durationMillis = 100),
-)
+    animationSpec = tween(durationMillis = 300),
+) + fadeOut(animationSpec = tween(durationMillis = 300))
 
 fun NavGraphBuilder.route(
     route: String,

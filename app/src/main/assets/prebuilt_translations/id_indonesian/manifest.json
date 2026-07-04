@@ -1,0 +1,9 @@
+{
+  "book": "Terjemah Al-Qur'an (Kemenag RI)",
+  "author": "Kementerian Agama Republik Indonesia",
+  "displayName": "Terjemahan Kemenag RI",
+  "langCode": "id",
+  "langName": "Indonesian",
+  "version": 1,
+  "downloadPath": "prebuilt_translations/id_indonesian/id_indonesian.json"
+}

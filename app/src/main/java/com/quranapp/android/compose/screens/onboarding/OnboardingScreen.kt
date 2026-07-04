@@ -7,6 +7,8 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -29,12 +31,10 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -48,6 +48,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -64,6 +65,14 @@ private val onboardingIcons = listOf(
     R.drawable.dr_icon_theme,
     R.drawable.dr_icon_translations,
     R.drawable.dr_icon_tafsir,
+)
+
+// Accent gradient per onboarding step
+private val stepGradientColors = listOf(
+    listOf(0xFF0EA880.toLong(), 0xFF0284C7.toLong()), // Language - emerald to blue
+    listOf(0xFF7C3AED.toLong(), 0xFFDB2777.toLong()), // Theme - violet to pink
+    listOf(0xFF0284C7.toLong(), 0xFF0EA880.toLong()), // Translations - blue to emerald
+    listOf(0xFFD97706.toLong(), 0xFFDC2626.toLong()), // Tafsir - amber to red
 )
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -103,99 +112,129 @@ fun OnboardingScreen(
     }
 
     val lastPage = pageCount - 1
+    val page = pagerState.currentPage
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = colorScheme.background
+    val gradients = stepGradientColors[page]
+    val gradientStart = androidx.compose.ui.graphics.Color(gradients[0])
+    val gradientEnd = androidx.compose.ui.graphics.Color(gradients[1])
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorScheme.background),
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-        ) {
+        Column(modifier = Modifier.fillMaxSize()) {
 
-            val page = pagerState.currentPage
-
-            Column(
+            // Header with gradient accent background
+            Box(
                 modifier = Modifier
-                    .background(colorScheme.surfaceContainer)
-                    .padding(start = 20.dp, end = 20.dp, bottom = 28.dp, top = 20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .fillMaxWidth()
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                gradientStart.copy(alpha = 0.15f),
+                                colorScheme.background.copy(alpha = 0f),
+                            )
+                        )
+                    ),
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .statusBarsPadding()
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.End,
+                        .padding(start = 20.dp, end = 20.dp, bottom = 28.dp, top = 0.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    TextButton(
-                        onClick = onComplete,
-                        shape = RoundedCornerShape(12.dp),
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .statusBarsPadding()
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.End,
                     ) {
-                        Text(
-                            stringResource(R.string.strLabelSkip),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = colorScheme.onSurfaceVariant,
-                        )
+                        TextButton(
+                            onClick = onComplete,
+                            shape = RoundedCornerShape(12.dp),
+                        ) {
+                            Text(
+                                stringResource(R.string.strLabelSkip),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
-                }
 
-                Box(
-                    modifier = Modifier
-                        .size(96.dp)
-                        .clip(RoundedCornerShape(26.dp))
-                        .background(colorScheme.primary.copy(alpha = 0.10f)),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    if (page != 3) Icon(
-                        painter = painterResource(onboardingIcons[page]),
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = colorScheme.primary,
-                    ) else Icon(
-                        painter = painterResource(onboardingIcons[page]),
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = null,
-                    )
-                }
+                    // Icon box with gradient bg
+                    AnimatedContent(
+                        targetState = page,
+                        transitionSpec = { fadeIn(tween(300)) togetherWith fadeOut(tween(200)) },
+                        label = "icon",
+                    ) { p ->
+                        Box(
+                            modifier = Modifier
+                                .size(96.dp)
+                                .clip(RoundedCornerShape(28.dp))
+                                .background(
+                                    Brush.linearGradient(
+                                        listOf(
+                                            androidx.compose.ui.graphics.Color(stepGradientColors[p][0]),
+                                            androidx.compose.ui.graphics.Color(stepGradientColors[p][1]),
+                                        )
+                                    )
+                                ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            if (p != 3) Icon(
+                                painter = painterResource(onboardingIcons[p]),
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = androidx.compose.ui.graphics.Color.White,
+                            ) else Icon(
+                                painter = painterResource(onboardingIcons[p]),
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = null,
+                            )
+                        }
+                    }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                AnimatedContent(
-                    targetState = page,
-                    transitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(180)) },
-                    label = "onboardingTitle",
-                ) { p ->
-                    val item = items.get(p)
+                    AnimatedContent(
+                        targetState = page,
+                        transitionSpec = {
+                            (fadeIn(tween(220)) + slideInVertically { it / 4 }) togetherWith
+                                    (fadeOut(tween(180)) + slideOutVertically { -it / 4 })
+                        },
+                        label = "onboardingTitle",
+                    ) { p ->
+                        val item = items.get(p)
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(
-                            text = stringResource(item.first),
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.SemiBold,
-                            color = colorScheme.onSurface,
-                            textAlign = TextAlign.Center,
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(
+                                text = stringResource(item.first),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = colorScheme.onSurface,
+                                textAlign = TextAlign.Center,
+                            )
 
-                        Spacer(modifier = Modifier.height(10.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                        Text(
-                            text = stringResource(item.second),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center,
-                        )
+                            Text(
+                                text = stringResource(item.second),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                            )
+                        }
                     }
                 }
             }
 
-            HorizontalDivider(
-                color = colorScheme.outline.alpha(0.2f)
-            )
-
+            // Content pager
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -216,17 +255,16 @@ fun OnboardingScreen(
                 }
             }
 
-            Surface(
+            // Bottom navigation
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .navigationBarsPadding(),
-                color = colorScheme.surfaceContainer,
-                shadowElevation = 12.dp,
+                    .background(colorScheme.surfaceContainer)
+                    .navigationBarsPadding()
+                    .padding(horizontal = 12.dp, vertical = 14.dp),
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 14.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
@@ -239,7 +277,7 @@ fun OnboardingScreen(
                             },
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.dr_icon_chevron_left),
+                                painter = painterResource(R.drawable.dr_icon_arrow_left),
                                 contentDescription = stringResource(R.string.strLabelBack),
                                 tint = colorScheme.onSurface,
                             )
@@ -248,6 +286,7 @@ fun OnboardingScreen(
                         Spacer(modifier = Modifier.size(48.dp))
                     }
 
+                    // Animated dots indicator
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -255,8 +294,8 @@ fun OnboardingScreen(
                         repeat(pageCount) { i ->
                             val selected = i == pagerState.currentPage
                             val dotWidth by animateDpAsState(
-                                targetValue = if (selected) 22.dp else 7.dp,
-                                animationSpec = tween(220),
+                                targetValue = if (selected) 24.dp else 6.dp,
+                                animationSpec = tween(300),
                                 label = "dotW",
                             )
 
@@ -266,12 +305,16 @@ fun OnboardingScreen(
                                         .height(6.dp)
                                         .width(dotWidth)
                                         .clip(RoundedCornerShape(3.dp))
-                                        .background(colorScheme.primary),
+                                        .background(
+                                            Brush.horizontalGradient(
+                                                listOf(gradientStart, gradientEnd)
+                                            )
+                                        ),
                                 )
                             } else {
                                 Box(
                                     modifier = Modifier
-                                        .size(7.dp)
+                                        .size(6.dp)
                                         .clip(RoundedCornerShape(3.dp))
                                         .background(colorScheme.outlineVariant.alpha(0.45f)),
                                 )
@@ -289,15 +332,15 @@ fun OnboardingScreen(
                                 }
                             }
                         },
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colorScheme.primary,
                             contentColor = colorScheme.onPrimary,
                         ),
-                        contentPadding = PaddingValues(horizontal = 22.dp, vertical = 12.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 13.dp),
                         elevation = ButtonDefaults.buttonElevation(
-                            defaultElevation = 2.dp,
-                            pressedElevation = 4.dp,
+                            defaultElevation = 4.dp,
+                            pressedElevation = 8.dp,
                         ),
                     ) {
                         Text(
@@ -307,7 +350,7 @@ fun OnboardingScreen(
                                 stringResource(R.string.strLabelNext)
                             },
                             style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.SemiBold,
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                 }

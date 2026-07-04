@@ -34,21 +34,7 @@ private data class AboutItem(
 )
 
 private val items = listOf(
-    AboutItem(
-        R.drawable.dr_icon_info,
-        R.string.strTitleAboutUs,
-        onClick = { InfoUtils.openAbout(it) }
-    ),
-    AboutItem(
-        R.drawable.dr_icon_bug,
-        R.string.strTitleSendFeedback,
-        onClick = { InfoUtils.openFeedbackPage(it) }
-    ),
-    AboutItem(
-        R.drawable.dr_icon_help,
-        R.string.strTitleHelpSupport,
-        onClick = { InfoUtils.openHelp(it) }
-    ),
+
     AboutItem(
         R.drawable.dr_icon_privacy_policy,
         R.string.strTitlePrivacyPolicy,
@@ -59,11 +45,7 @@ private val items = listOf(
         R.string.github,
         onClick = { AppBridge.newOpener(it).browseLink(ApiConfig.GITHUB_REPOSITORY_URL) }
     ),
-    AboutItem(
-        R.drawable.icon_discord,
-        R.string.discord,
-        onClick = { InfoUtils.openDiscord(it) }
-    ),
+
 )
 
 @Composable

@@ -93,35 +93,40 @@ class QuranTafsirDBHelper(private val context: Context) : SQLiteOpenHelper(
 
     fun storeTafsirs(tafsirs: List<TafsirModel>, version: String, timestamp: Long) {
         val db = writableDatabase
+        db.beginTransaction()
+        try {
+            for (i in 0 until tafsirs.size) {
+                val tafsir = tafsirs[i]
 
-        for (i in 0 until tafsirs.size) {
-            val tafsir = tafsirs[i]
+                val chapterNo = tafsir.verseKey.split(":").first().toIntOrNull() ?: -1
+                val verses = tafsir.verses.map {
+                    it.split(":").last().toIntOrNull() ?: -1
+                }.sorted()
 
-            val chapterNo = tafsir.verseKey.split(":").first().toIntOrNull() ?: -1
-            val verses = tafsir.verses.map {
-                it.split(":").last().toIntOrNull() ?: -1
-            }.sorted()
+                val fromVerse = verses.firstOrNull() ?: -1
+                val toVerse = verses.lastOrNull() ?: -1
 
-            val fromVerse = verses.firstOrNull() ?: -1
-            val toVerse = verses.lastOrNull() ?: -1
+                val values = ContentValues().apply {
+                    put(QuranTafsirEntry._ID, makeTafsirVerseId(tafsir.key, tafsir.verseKey))
+                    put(QuranTafsirEntry.COL_TAFSIR_KEY, tafsir.key)
+                    put(QuranTafsirEntry.COL_CHAPTER_NO, chapterNo)
+                    put(QuranTafsirEntry.COL_FROM_VERSE_NO, fromVerse);
+                    put(QuranTafsirEntry.COL_TO_VERSE_NO, toVerse)
+                    put(QuranTafsirEntry.COL_TEXT, tafsir.text)
+                    put(QuranTafsirEntry.COL_VERSION, version)
+                    put(QuranTafsirEntry.COL_LAST_UPDATED, timestamp)
+                }
 
-            val values = ContentValues().apply {
-                put(QuranTafsirEntry._ID, makeTafsirVerseId(tafsir.key, tafsir.verseKey))
-                put(QuranTafsirEntry.COL_TAFSIR_KEY, tafsir.key)
-                put(QuranTafsirEntry.COL_CHAPTER_NO, chapterNo)
-                put(QuranTafsirEntry.COL_FROM_VERSE_NO, fromVerse);
-                put(QuranTafsirEntry.COL_TO_VERSE_NO, toVerse)
-                put(QuranTafsirEntry.COL_TEXT, tafsir.text)
-                put(QuranTafsirEntry.COL_VERSION, version)
-                put(QuranTafsirEntry.COL_LAST_UPDATED, timestamp)
+                db.insertWithOnConflict(
+                    QuranTafsirEntry.TABLE_NAME,
+                    null,
+                    values,
+                    SQLiteDatabase.CONFLICT_REPLACE
+                )
             }
-
-            db.insertWithOnConflict(
-                QuranTafsirEntry.TABLE_NAME,
-                null,
-                values,
-                SQLiteDatabase.CONFLICT_REPLACE
-            )
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
         }
     }
 

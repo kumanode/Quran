@@ -1,5 +1,6 @@
 package com.quranapp.android.compose.components.reader.navigator
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

@@ -64,6 +64,7 @@ fun SettingsThemeScreen() {
     val themeMode = ThemeUtils.observeThemeMode()
     val themeColor = ThemeUtils.observeThemeColor()
     val isDynamicColor = ThemeUtils.observeIsDynamicColor()
+    val isLiquidGlass = ThemeUtils.observeIsLiquidGlassEffect()
     var showThemeBottomSheet by rememberSaveable { mutableStateOf(false) }
 
     val span = 2
@@ -102,6 +103,18 @@ fun SettingsThemeScreen() {
                         coroutineScope.launch {
                             ThemeUtils.setDynamicColor(it)
                         }
+                    }
+                }
+            }
+
+            fullWidthColumn(span) {
+                SwitchItem(
+                    title = R.string.theme_liquid_glass,
+                    subtitle = null,
+                    checked = isLiquidGlass,
+                ) {
+                    coroutineScope.launch {
+                        ThemeUtils.setIsLiquidGlassEffect(it)
                     }
                 }
             }

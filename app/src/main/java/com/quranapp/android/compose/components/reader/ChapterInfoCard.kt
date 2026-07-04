@@ -72,6 +72,8 @@ fun ChapterInfoCard(chapterNo: Int) {
     val revelationLabel =
         stringResource(if (isMeccan) R.string.strTitleMakki else R.string.strTitleMadani)
 
+    val isLiquidGlass = com.quranapp.android.compose.utils.ThemeUtils.observeIsLiquidGlassEffect()
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -80,7 +82,7 @@ fun ChapterInfoCard(chapterNo: Int) {
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.surfaceContainer,
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isLiquidGlass) 0.dp else 3.dp),
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(

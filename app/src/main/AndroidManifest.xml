@@ -107,6 +107,7 @@
         <activity android:name=".activities.reference.ActivityQuranicTopics">
 
         </activity>
+        <activity android:name=".activities.reference.ActivityTajweed" />
         <activity
             android:name=".activities.ActivityTafsir"
             android:exported="true"
@@ -188,6 +189,7 @@
         <activity android:name=".activities.ActivityStorageCleanup" />
         <activity android:name=".activities.ActivityExportImport" />
         <activity android:name=".activities.ActivityAppLogs" />
+        <activity android:name=".activities.ActivityDonate" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

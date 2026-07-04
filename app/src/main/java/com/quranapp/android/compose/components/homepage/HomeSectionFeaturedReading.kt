@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -87,57 +88,73 @@ private fun FeaturedQuranCard(
 ) {
     val context = LocalContext.current
 
-    Box(
+    val isLiquidGlass = com.quranapp.android.compose.utils.ThemeUtils.observeIsLiquidGlassEffect()
+
+    androidx.compose.material3.Card(
+        onClick = { ReaderFactory.startVerseRange(context, model.chapterNo, model.verseRange) },
         modifier = Modifier
-            .width(220.dp)
-            .height(110.dp)
-            .clip(shapes.medium)
-            .background(Color.Black)
-            .clickable {
-                ReaderFactory.startVerseRange(context, model.chapterNo, model.verseRange)
-            },
+            .width(260.dp)
+            .height(130.dp),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
+        colors = androidx.compose.material3.CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        ),
+        elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = if (isLiquidGlass) 0.dp else 2.dp),
+        border = if (isLiquidGlass) androidx.compose.foundation.BorderStroke(1.dp, androidx.compose.material3.MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)) else null
     ) {
-        Image(
-            painter = painterResource(R.drawable.dr_quran_wallpaper),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .alpha(0.6f)
-        )
-
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .background(
-                    Brush.verticalGradient(
-                        0.5f to colorScheme.primary.alpha(0.1f),
-                        1f to Color.Black.alpha(0.9f)
-                    )
-                )
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp),
-            verticalArrangement = Arrangement.Bottom
-        ) {
-            Text(
-                text = model.title,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.SemiBold
-                ).merge(tightTextStyle),
-                color = Color.White,
-                maxLines = 2
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                painter = painterResource(R.drawable.dr_quran_wallpaper),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.8f)
             )
 
-            Spacer(modifier = Modifier.height(2.dp))
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(
+                        Brush.verticalGradient(
+                            0.0f to Color.Transparent,
+                            1f to Color.Black.alpha(0.85f)
+                        )
+                    )
+            )
 
-            Text(
-                text = model.subtext,
-                style = MaterialTheme.typography.labelSmall.merge(tightTextStyle),
-                color = Color.White.copy(alpha = 0.7f)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                Text(
+                    text = model.title,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ).merge(tightTextStyle),
+                    color = Color.White,
+                    maxLines = 2
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = model.subtext,
+                    style = MaterialTheme.typography.bodySmall.merge(tightTextStyle),
+                    color = Color.White.copy(alpha = 0.85f)
+                )
+            }
+            
+            androidx.compose.material3.Icon(
+                painter = painterResource(R.drawable.dr_icon_feature),
+                contentDescription = null,
+                tint = Color.White.alpha(0.5f),
+                modifier = Modifier
+                    .align(androidx.compose.ui.Alignment.TopEnd)
+                    .padding(16.dp)
+                    .size(18.dp)
             )
         }
     }
