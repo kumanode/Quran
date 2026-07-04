@@ -441,6 +441,7 @@ internal fun HomePremiumHeaderPill(
 ) {
     val alpha = if (isSelected) 0.12f else 0f
     val contentAlpha = if (isSelected) 1f else 0.6f
+    val colors = MaterialTheme.colorScheme
 
     Surface(
         modifier = modifier.clip(RoundedCornerShape(999.dp)),
