@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="tajweed_silent_letter">Idgham</string>
-    <string name="tajweed_normal_madd">Panjang bacaan Maad 2 harakat</string>
-    <string name="tajweed_separated_madd">Diperbolehkan Maad 2 atau 4 atau 6 harakat</string>
-    <string name="tajweed_connected_madd">Panjang bacaan Maad 4 atau 5 harakat</string>
-    <string name="tajweed_necessary_madd">Panjang bacaan Maad  6 harakat</string>
-    <string name="tajweed_ghunna">Ikhfa/Ghunnah\'</string>
-    <string name="tajweed_qalqala">Qalqalah</string>
-    <string name="tajweed_tafkhim">Tafkhim</string>
+    <string name="tajweed_silent_letter">Huruf tidak dibaca</string>
+    <string name="tajweed_normal_madd">Mad asli (2)</string>
+    <string name="tajweed_separated_madd">Mad terpisah (2/4/6)</string>
+    <string name="tajweed_connected_madd">Mad bersambung (4/5)</string>
+    <string name="tajweed_necessary_madd">Mad lazim (6)</string>
+    <string name="tajweed_ghunna">Ghunnah/ikhfa’</string>
+    <string name="tajweed_qalqala">Qalqalah (memantul)</string>
+    <string name="tajweed_tafkhim">Tafkhim (tebal)</string>
 </resources>

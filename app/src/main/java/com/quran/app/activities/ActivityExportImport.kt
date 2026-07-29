@@ -1,0 +1,428 @@
+package com.quran.app.activities
+
+
+import com.quran.app.compose.utils.ThemeUtils
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatDelegate
+import com.quran.app.R
+import com.quran.app.activities.base.BaseActivity
+import com.quran.app.api.JsonHelper
+import com.quran.app.api.safeBoolean
+import com.quran.app.api.safeFloat
+import com.quran.app.api.safeJsonArray
+import com.quran.app.api.safeJsonObject
+import com.quran.app.api.safeString
+import com.quran.app.components.bookmark.BookmarkModel
+import com.quran.app.compose.components.player.dialogs.AudioEndBehaviour
+import com.quran.app.compose.components.player.dialogs.AudioOption
+import com.quran.app.compose.components.reader.ReaderMode
+import com.quran.app.compose.screens.ExportImportScreen
+import com.quran.app.compose.theme.QuranAppTheme
+import com.quran.app.compose.utils.preferences.AppPreferences
+import com.quran.app.compose.utils.preferences.ReaderPreferences
+import com.quran.app.compose.utils.preferences.RecitationPreferences
+import com.quran.app.db.DatabaseProvider
+import com.quran.app.utils.Log
+import com.quran.app.utils.Logger
+import com.quran.app.utils.app.ResourceDownloadProxy
+import com.quran.app.utils.reader.QuranScriptVariant
+import com.quran.app.utils.sharedPrefs.SPAppConfigs
+import com.quran.app.utils.univ.MessageUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+
+class ActivityExportImport : BaseActivity() {
+    private val userRepository = DatabaseProvider.getUserRepository(this)
+    private val exportLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                exportDataToFile(uri)
+            }
+        }
+    }
+
+    private val importLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                importData(uri)
+            }
+        }
+    }
+
+    private var importScopes = mapOf<String, Boolean>()
+    private var importFailuresMap = mutableMapOf<String, String>()
+
+    private var exportContent = ""
+
+    override fun getLayoutResource() = 0
+
+    override fun shouldInflateAsynchronously() = false
+
+    override fun onActivityInflated(activityView: View, savedInstanceState: Bundle?) {
+        setContent {
+            QuranAppTheme {
+                ExportImportScreen(
+                    importCallback = { scopes ->
+                        importScopes = scopes
+                        launchImportFilePicker()
+                    },
+                    exportCallback = { scopes ->
+                        CoroutineScope(Dispatchers.IO).launch {
+                            exportData(scopes)
+
+                            withContext(Dispatchers.Main) {
+                                launchExportFilePicker()
+                            }
+                        }
+                    },
+                )
+            }
+        }
+    }
+
+    private fun launchImportFilePicker() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/json"
+        }
+        importLauncher.launch(intent)
+    }
+
+    private fun launchExportFilePicker() {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/json"
+            putExtra(Intent.EXTRA_TITLE, "quranapp-exported-data-v1.json")
+        }
+        exportLauncher.launch(intent)
+    }
+
+    private fun importData(uri: Uri) {
+        importFailuresMap = mutableMapOf()
+        CoroutineScope(Dispatchers.IO).launch {
+            val content = contentResolver.openInputStream(uri)?.use { inputStream ->
+                BufferedReader(InputStreamReader(inputStream)).use { reader ->
+                    reader.readText()
+                }
+            } ?: ""
+
+
+            val jsonObject = JsonHelper.json.parseToJsonElement(content).jsonObject
+            // val version = jsonObject.safeInt(ExportKeys.VERSION, 1)
+
+            importV1(jsonObject, importScopes)
+
+            // restart after 1 second
+            delay(1000)
+
+            withContext(Dispatchers.Main) {
+                if (
+                    importScopes.get(ExportKeys.SETTINGS) == true &&
+                    jsonObject.safeJsonObject(ExportKeys.SETTINGS) != null
+                ) {
+                    restartMainActivity()
+                }
+            }
+        }
+    }
+
+    private suspend fun importV1(
+        jsonObject: JsonObject,
+        scopes: Map<String, Boolean>
+    ) {
+        if (scopes.get(ExportKeys.BOOKMARKS) == true) {
+            jsonObject.safeJsonArray(ExportKeys.BOOKMARKS)?.let { bookmarks ->
+                importBookmarks(bookmarks) { error ->
+                    importFailuresMap[ExportKeys.BOOKMARKS] = error
+                }
+            }
+
+        }
+
+        if (scopes.get(ExportKeys.SETTINGS) == true) {
+            jsonObject.safeJsonObject(ExportKeys.SETTINGS)?.let { settings ->
+                importSettings(settings)
+            }
+        }
+    }
+
+    private suspend fun importBookmarks(
+        jsonArray: JsonArray,
+        failureCallback: (String) -> Unit
+    ) {
+        try {
+            val bookmarks = BookmarkModel.fromJson(jsonArray)
+            userRepository.addMultipleBookmarks(bookmarks.map { it.toEntity() })
+        } catch (e: Exception) {
+            failureCallback(e.message ?: "Unknown error")
+            withContext(Dispatchers.Main) {
+                Logger.d(e)
+                Log.saveError(e, "parseBookmarksAndSave")
+            }
+        }
+
+    }
+
+    private suspend fun importSettings(jsonObject: JsonObject) {
+
+        jsonObject.safeString(ExportKeys.LOCALE)?.let {
+            SPAppConfigs.setLocale(this, it)
+        }
+
+        jsonObject.safeString(ExportKeys.THEME)?.let {
+            ThemeUtils.setThemeMode(it)
+
+            withContext(Dispatchers.Main) {
+                AppCompatDelegate.setDefaultNightMode(
+                    when (it) {
+                        ThemeUtils.THEME_MODE_DARK -> AppCompatDelegate.MODE_NIGHT_YES
+                        ThemeUtils.THEME_MODE_LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+                        ThemeUtils.THEME_MODE_DEFAULT -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                        else -> {
+                            AppCompatDelegate.getDefaultNightMode()
+                        }
+                    }
+                )
+            }
+        }
+
+        jsonObject.safeString(ExportKeys.DL_SRC)?.let {
+            AppPreferences.setResourceDownloadProxy(ResourceDownloadProxy.fromValue(it))
+        }
+
+        jsonObject.safeFloat(ExportKeys.READER_AUTO_SCROLL_SPEED)?.let {
+            ReaderPreferences.setAutoScrollSpeed(it)
+        }
+
+        jsonObject.safeBoolean(ExportKeys.READER_ARABIC_TEXT_ENABLED)?.let {
+            ReaderPreferences.setArabicTextEnabled(it)
+        }
+
+        jsonObject.safeString(ExportKeys.READER_MODE)?.let {
+            ReaderPreferences.setReaderMode(ReaderMode.fromValue(it))
+        }
+
+
+        jsonObject.safeFloat(ExportKeys.RECITATION_SPEED)?.let {
+            RecitationPreferences.setSpeed(it)
+        }
+
+        jsonObject.safeString(ExportKeys.RECITATION_RECITER)?.let {
+            RecitationPreferences.setReciterId(it)
+        }
+
+        jsonObject.safeString(ExportKeys.RECITATION_RECITER_TRANSLATION)?.let {
+            RecitationPreferences.setTranslationReciterId(it)
+        }
+
+        jsonObject.safeString(ExportKeys.RECITATION_OPTION_AUDIO)?.let {
+            RecitationPreferences.setAudioOption(AudioOption.fromValue(it))
+        }
+
+        jsonObject.safeString(ExportKeys.RECITATION_AUDIO_END_BEHAVIOUR)?.let {
+            RecitationPreferences.setAudioEndBehaviour(AudioEndBehaviour.fromValue(it))
+        }
+
+        jsonObject.safeFloat(ExportKeys.TEXT_SIZE_MULT_TAFSIR)?.let {
+            ReaderPreferences.setTafsirTextSizeMultiplier(it)
+        }
+
+        jsonObject.safeFloat(ExportKeys.TEXT_SIZE_MULT_ARABIC)?.let {
+            ReaderPreferences.setArabicTextSizeMultiplier(it)
+        }
+
+        jsonObject.safeFloat(ExportKeys.TEXT_SIZE_MULT_TRANSLATION)?.let {
+            ReaderPreferences.setTranslationTextSizeMultiplier(it)
+        }
+
+        jsonObject.safeString(ExportKeys.SCRIPT_CURRENT)?.let {
+            ReaderPreferences.setQuranScript(it)
+        }
+
+        jsonObject.safeString(ExportKeys.SCRIPT_VARIANT_CURRENT)?.let {
+            ReaderPreferences.setQuranScriptVariant(QuranScriptVariant.fromValue(it))
+        }
+
+        jsonObject.safeString(ExportKeys.TAFSIR_CURRENT)?.let {
+            ReaderPreferences.setTafsirId(it)
+        }
+
+        jsonObject.safeJsonArray(ExportKeys.TRANSLATION_CURRENT)?.let { translations ->
+            val translationList = mutableSetOf<String>()
+            for (i in 0 until translations.size) {
+                translations[i].jsonPrimitive.contentOrNull?.let { translation ->
+                    translationList.add(translation)
+                }
+            }
+
+            ReaderPreferences.setTranslations(translationList)
+        }
+
+    }
+
+
+    private suspend fun exportData(scopes: Map<String, Boolean>) {
+        val obj = JSONObject()
+
+        // bookmarks
+        if (scopes.get(ExportKeys.BOOKMARKS) == true) {
+            val bookmarks = prepareBookmarksForExport()
+            if (bookmarks != null) {
+                obj.put(ExportKeys.BOOKMARKS, bookmarks)
+            }
+        }
+
+        // settings
+        if (scopes.get(ExportKeys.SETTINGS) == true) {
+            val settings = prepareSettingsForExport()
+            obj.put(ExportKeys.SETTINGS, settings)
+        }
+
+        // version
+        obj.put(ExportKeys.VERSION, 1)
+
+        exportContent = obj.toString()
+
+    }
+
+    private suspend fun prepareBookmarksForExport(): JSONArray? {
+        val bookmarks = userRepository.getBookmarks()
+
+        if (bookmarks.isEmpty()) {
+            return null
+        }
+
+        return BookmarkModel.toJson(bookmarks.map { BookmarkModel.fromEntity(it) })
+    }
+
+    private suspend fun prepareSettingsForExport(): JSONObject {
+        val settings = JSONObject()
+
+        settings.put(ExportKeys.LOCALE, SPAppConfigs.getLocale(this))
+        settings.put(ExportKeys.THEME, ThemeUtils.getThemeMode())
+        settings.put(ExportKeys.DL_SRC, AppPreferences.getResourceDownloadProxy().value)
+
+        settings.put(
+            ExportKeys.READER_AUTO_SCROLL_SPEED,
+            ReaderPreferences.getAutoScrollSpeed()
+        )
+        settings.put(
+            ExportKeys.READER_ARABIC_TEXT_ENABLED,
+            ReaderPreferences.getArabicTextEnabled()
+        )
+        settings.put(ExportKeys.READER_MODE, ReaderPreferences.getReaderMode())
+
+        settings.put(ExportKeys.RECITATION_SPEED, RecitationPreferences.getSpeed())
+        settings.put(ExportKeys.RECITATION_RECITER, RecitationPreferences.getReciterId())
+        settings.put(
+            ExportKeys.RECITATION_RECITER_TRANSLATION,
+            RecitationPreferences.getTranslationReciterId()
+        )
+        settings.put(
+            ExportKeys.RECITATION_OPTION_AUDIO,
+            RecitationPreferences.getAudioOption().value
+        )
+        settings.put(
+            ExportKeys.RECITATION_AUDIO_END_BEHAVIOUR,
+            RecitationPreferences.getAudioEndBehaviour().value
+        )
+
+        settings.put(
+            ExportKeys.TEXT_SIZE_MULT_TAFSIR,
+            ReaderPreferences.getTafsirTextSizeMultiplier()
+        )
+        settings.put(
+            ExportKeys.TEXT_SIZE_MULT_ARABIC,
+            ReaderPreferences.getArabicTextSizeMultiplier()
+        )
+        settings.put(
+            ExportKeys.TEXT_SIZE_MULT_TRANSLATION,
+            ReaderPreferences.getTranslationTextSizeMultiplier()
+        )
+
+        settings.put(ExportKeys.SCRIPT_CURRENT, ReaderPreferences.getQuranScript())
+        settings.put(ExportKeys.TAFSIR_CURRENT, ReaderPreferences.getTafsirId())
+
+        val translations = JSONArray()
+
+        for (translation in ReaderPreferences.getTranslations()) {
+            translations.put(translation)
+        }
+
+        settings.put(ExportKeys.TRANSLATION_CURRENT, translations)
+
+        // Add settings to the JSON object
+        return settings
+    }
+
+    private fun exportDataToFile(uri: Uri) {
+        if (exportContent.isBlank()) {
+            return
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            contentResolver.openOutputStream(uri)?.use { outputStream ->
+                outputStream.write(exportContent.toByteArray())
+            }
+
+            withContext(Dispatchers.Main) {
+                MessageUtils.showRemovableToast(
+                    this@ActivityExportImport,
+                    R.string.msgExportSuccess,
+                    Toast.LENGTH_LONG
+                )
+            }
+        }
+    }
+}
+
+class ExportKeys {
+    companion object {
+        const val VERSION = "version"
+        const val BOOKMARKS = "bookmarks"
+        const val SETTINGS = "settings"
+
+        // item keys
+        const val LOCALE = "config.lang"
+        const val THEME = "config.theme"
+        const val DL_SRC = "config.dlSrc"
+        const val READER_AUTO_SCROLL_SPEED = "reader.autoScrollSpeed"
+        const val READER_ARABIC_TEXT_ENABLED = "reader.arabicTextEnabled"
+        const val READER_MODE = "reader.mode"
+        const val RECITATION_SPEED = "rec.speed"
+        const val RECITATION_RECITER = "rec.reciter"
+        const val RECITATION_RECITER_TRANSLATION = "rec.reciter_translation"
+        const val RECITATION_OPTION_AUDIO = "rec.option_audio"
+        const val RECITATION_AUDIO_END_BEHAVIOUR = "rec.audio_end_behaviour"
+        const val TEXT_SIZE_MULT_TAFSIR = "text.size_mult_tafsir"
+        const val TEXT_SIZE_MULT_TRANSLATION = "text.size_mult_translation"
+        const val TEXT_SIZE_MULT_ARABIC = "text.size_mult_arabic"
+        const val SCRIPT_CURRENT = "script.current"
+        const val SCRIPT_VARIANT_CURRENT = "script_variant.current"
+        const val TAFSIR_CURRENT = "tafsir.current"
+        const val TRANSLATION_CURRENT = "translation.current"
+    }
+}

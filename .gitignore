@@ -16,3 +16,15 @@
 local.properties
 /keys
 ktlint.jar
+keystore.properties
+keystore/
+.kotlin/
+fix_mipmap.py
+rename_package.py
+replace_logo.py
+dr_quran_wallpaper.webp
+quran_wallpaper.webp
+*.jks
+*.keystore
+*.p12
+*.key

@@ -1,6 +1,6 @@
 kotlin version: 2.2.21
 error message: org.jetbrains.kotlin.backend.common.BackendException: Backend Internal error: Exception during IR lowering
-File being compiled: D:/ANDROID_PROJECTS/OSS/QuranApp/app/src/main/java/com/quranapp/android/utils/app/VersioningUiMock.kt
+File being compiled: D:/ANDROID_PROJECTS/OSS/QuranApp/app/src/main/java/com/quran/app/utils/app/VersioningUiMock.kt
 The root cause java.lang.IllegalArgumentException was thrown at: org.jetbrains.kotlin.backend.jvm.lower.RecordEnclosingMethodsLowering$lower$1.visitFunctionAccess(RecordEnclosingMethodsLowering.kt:37)
 	at org.jetbrains.kotlin.backend.common.BackendException$Companion.report(BackendException.kt:31)
 	at org.jetbrains.kotlin.backend.common.BackendException$Companion.report$default(BackendException.kt:15)

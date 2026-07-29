@@ -1,19 +1,21 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
-    id("kotlin-android")
     id("org.jetbrains.kotlin.android")
     id("kotlinx-serialization")
-    id("kotlin-kapt")
+    alias(libs.plugins.ksp)
     id("kotlin-parcelize")
     alias(libs.plugins.kotlin.compose.compiler)
 }
 
 android {
-    namespace = "com.quranapp.android"
+    namespace = "com.quran.app"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.quranapp.android"
+        applicationId = "com.quran.app"
         minSdk = 24
         targetSdk = 35
 
@@ -21,7 +23,7 @@ android {
         // but I can't change it now as the app is already in the Play Store
         // now just incrementing from there
         versionCode = 23_11_11_142
-        versionName = "2026.05.13.2"
+        versionName = "1.0.0"
 
         resValue("string", "app_name", "Quran")
 
@@ -43,6 +45,7 @@ android {
         dataBinding = true
         compose = true
         buildConfig = true
+        resValues = true
     }
 
     buildTypes {
@@ -61,6 +64,22 @@ android {
         }
 
         release {
+            signingConfig = signingConfigs.getByName("debug") // Will be overridden if properties exist
+            
+            val keystorePropertiesFile = rootProject.file("keystore.properties")
+            if (keystorePropertiesFile.exists()) {
+                val keystoreProperties = Properties()
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+                
+                signingConfigs.create("release") {
+                    storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                    storePassword = keystoreProperties.getProperty("storePassword")
+                    keyAlias = keystoreProperties.getProperty("keyAlias")
+                    keyPassword = keystoreProperties.getProperty("keyPassword")
+                }
+                signingConfig = signingConfigs.getByName("release")
+            }
+
             isDebuggable = false
             isMinifyEnabled = true
             isShrinkResources = true
@@ -86,10 +105,6 @@ android {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
     }
 
     dependenciesInfo {
@@ -163,7 +178,7 @@ dependencies {
 
     // Room
     implementation(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
     implementation(libs.paging)
@@ -185,4 +200,14 @@ dependencies {
     implementation("com.solanamobile:mobile-wallet-adapter-clientlib-ktx:2.1.0")
     // Sol4k for building transactions and RPC calls
     implementation("org.sol4k:sol4k:0.7.0")
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }

@@ -1,115 +1,67 @@
 <div align="center">
 
-<img src="app/src/main/res/mipmap-xxxhdpi/icon_launcher_round.webp" alt='QuranApp logo' height="140"/>
+  <img src="app/src/main/res/mipmap-xxxhdpi/icon_launcher_round.webp" alt="Quran Logo" width="120" height="120"/>
 
-### QuranApp: Read and Explore
+  # 📖 Quran
 
-The QuranApp is an ad-free and privacy-focused mobile application that facilitates reading and exploring the Holy Qur’an on daily basis at any time and place.
+  **A modern, ad-free, and privacy-focused Quran application for Android.**
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/AlfaazPlus/QuranApp)
-[![CI](https://github.com/AlfaazPlus/QuranApp/actions/workflows/ci.yml/badge.svg)](https://github.com/AlfaazPlus/QuranApp/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/github/v/release/AlfaazPlus/QuranApp?include_prereleases&sort=semver&color=025e3e&style=flat-square)](https://github.com/AlfaazPlus/QuranApp/releases/latest)
-[![Downloads (QuranApp)](https://img.shields.io/github/downloads/AlfaazPlus/QuranApp/total?logo=github&color=025e3e&style=flat-square)](https://github.com/AlfaazPlus/QuranApp/releases/latest)
-[![License](https://img.shields.io/github/license/AlfaazPlus/QuranApp?color=025e3e&style=flat-square)](https://github.com/AlfaazPlus/QuranApp/blob/master/LICENSE)
+  [![License](https://img.shields.io/github/license/kumanode/Quran?color=025e3e&style=for-the-badge)](https://github.com/kumanode/Quran/blob/master/LICENSE)
+  [![Release](https://img.shields.io/github/v/release/kumanode/Quran?include_prereleases&color=025e3e&style=for-the-badge)](https://github.com/kumanode/Quran/releases)
+  [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://android.com)
 
-<hr />
+  <br />
 
-**Download QuranApp:**
-
-[<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-alt='Get it on Google Play'
-height="80">](https://play.google.com/store/apps/details?id=com.quranapp.android)
-[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
-alt='Get it on GitHub'
-height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.quranapp.android)
-[<img src="https://user-images.githubusercontent.com/69304392/148696068-0cfea65d-b18f-4685-82b5-329a330b1c0d.png"
-alt='Get it on GitHub'
-height="80">](https://github.com/alfaazplus/quranapp/releases/latest)
-
-**Join the community:**
-
-[![Discord](repo_assets/widgets/discord.svg)](https://discord.com/invite/vtutnwzxRb)
-[![Matrix](repo_assets/widgets/matrix.svg)](https://matrix.to/#/#quranapp:matrix.org)
-[![Telegram](repo_assets/widgets/telegram.svg)](https://t.me/thequranapp)
-
-**Check out more apps:**
-
-[<img src="https://github.com/AlfaazPlus/SunnahApp/raw/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp" alt='SunnahApp logo' height="80"/>](https://github.com/AlfaazPlus/SunnahApp)
-
-**[SunnahApp](https://github.com/AlfaazPlus/SunnahApp)**
+  > ℹ️ **Fork Notice:** This repository is a customized fork of [QuranApp](https://github.com/AlfaazPlus/QuranApp) by AlfaazPlus, updated with Jetpack Compose UI, Material 3, and Dhikr & Digital Tasbih features.
 
 </div>
 
-<hr />
+---
 
-<div align="left">
+## 📱 Screenshots
 
-<details>
-<summary>Table of Contents</summary>
-
-- [Screenshots](#screenshots)
-- Features
-    - [Highlights](#features)
-    - [All features](/FEATURES.md)
-- [Credits](#credits)
-- Contribute
-    - [Contributing](#contributing)
-    - [Contributors](/CONTRIBUTORS.md)
-- [License](/LICENSE)
-</details>
-
-## Screenshots
-
-<div style="width:100%;">
-      <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_1.png" alt='Screenshot 1' width='24%' />
-      <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_2.png" alt='Screenshot 2' width='24%' />
-      <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_3.png" alt='Screenshot 3' width='24%' />
-      <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_4.png" alt='Screenshot 4' width='24%' />
-</div>
-<div style="width:100%;">
-      <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_5.png" alt='Screenshot 5' width='24%' />
-      <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_6.png" alt='Screenshot 6' width='24%' />
-      <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_7.png" alt='Screenshot 7' width='24%' />
-      <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_8.png" alt='Screenshot 8' width='24%' />
+<div align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_1.png" width="19%" alt="Screenshot 1" />
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_2.png" width="19%" alt="Screenshot 2" />
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_3.png" width="19%" alt="Screenshot 3" />
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_4.png" width="19%" alt="Screenshot 4" />
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_5.png" width="19%" alt="Screenshot 5" />
 </div>
 
-## Features
+---
 
-| Salient Features                           |     |
-|--------------------------------------------|-----|
-| 🚫 No Ads or Purchases                     | ✅   |
-| 🛡️ No permission required *               | ✅   |
-| 📙 Multiple Translations and Tafsirs       | ✅   |
-| 🎙️ Multiple Recitations with Translations | ✅   |
-| 🔤 Multiple Quran Fonts                    | ✅   |
-| 📄 Mushaf Mode                             | ✅   |
-| 🎨 Material Colors                         | ✅   |
-| ❤️ Verse Reminder                          | ✅   |
-| ⚡ [Many more...](/FEATURES.md)             | ✅   |
+## ✨ Features
 
-<sub>_* Permissions that affect your privacy such as storage, gps, camera etc. are not required._</sub>
+- 🚫 **Ad-Free & Privacy First**: Zero ads, no tracking, and no invasive permissions required.
+- 📙 **30+ Translations & Tafsirs**: Supports Indonesian, English, Arabic, Malay, Urdu, and more.
+- 🎙️ **Audio Recitations**: Stream or download recitations from world-renowned Qaris.
+- 📿 **Dhikr & Digital Tasbih**: Daily Dhikr & Dua collection with an interactive counter.
+- 🔤 **Multiple Scripts & Modes**: Uthmani script, Indopak font, and traditional Mushaf mode.
+- 🎨 **Material 3 UI**: Clean Jetpack Compose interface supporting dark and light themes.
+- 🔖 **Bookmarks & Search**: Fast full-text search, verse bookmarking, and reading history.
 
-See an overview of all the features [here](/FEATURES.md).
+---
 
-## Credits
+## 🛠️ Tech Stack
 
-- [QuranEnc](https://quranenc.com/en/home)
-- [Tanzil](https://tanzil.net/)
-- [quran.com](https://quran.com/)
-- [qurandb.com](https://qurandb.com)
-- [tarteel.ai](https://tarteel.ai)
-- [quranicaudio.com](https://quranicaudio.com)
-- [everyayah.com](https://everyayah.com/)
+- **UI**: Jetpack Compose & Material 3
+- **Database**: Room Database & DataStore
+- **Audio Engine**: AndroidX Media3 (ExoPlayer)
+- **Language**: Kotlin (Coroutines, Flow)
 
-See [this page](/CONTRIBUTORS.md) to know about the contributors.
+---
 
-## Contributing
+## 🚀 Quick Start
 
-If you want to contribute, kindly visit [CONTRIBUTING.md](/CONTRIBUTING.md) to learn the ways to get started. For a more comprehensive guide to the codebase, please refer to the [DeepWiki documentation](https://deepwiki.com/AlfaazPlus/QuranApp).
+```bash
+git clone https://github.com/kumanode/Quran.git
+cd Quran
+./gradlew assembleDebug
+```
 
+---
 
-## License
+## 📄 License & Credits
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](/LICENSE)
-
-</div>
+- **Upstream Project**: Forked from [AlfaazPlus/QuranApp](https://github.com/AlfaazPlus/QuranApp).
+- **License**: Distributed under the [GNU General Public License v3.0](https://github.com/kumanode/Quran/blob/master/LICENSE).

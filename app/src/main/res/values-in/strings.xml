@@ -436,61 +436,118 @@
     <string name="englishContentOnly">Konten di halaman ini hanya tersedia dalam bahasa Inggris.</string>
     <string name="estimatedSize">Perkiraan ukuran: %s</string>
     <string name="msgPreparingPrebuiltAtlas">Sedang menyiapkan teks Al-Qur\'an untuk pertama kali. Ini akan memakan beberapa detik.</string>
-    <string name="titleTajweedRules">Hukum Tajwid</string>
-    <string name="tajweed_rule_1_title">Nun Sukun &amp; Tanwin</string>
-    <string name="tajweed_rule_1_desc">Hukum bacaan ketika Nun mati atau Tanwin bertemu huruf tertentu.</string>
-    <string name="tajweed_rule_1_1_title">Idzhar Halqi</string>
-    <string name="tajweed_rule_1_1_desc">Dibaca jelas tanpa dengung jika bertemu huruf tenggorokan (ء، ح، خ، ع، غ، هـ).</string>
-    <string name="tajweed_rule_1_2_title">Idgham Bighunnah</string>
-    <string name="tajweed_rule_1_2_desc">Dilebur dengan dengung jika bertemu huruf (ي، ن، م، و).</string>
-    <string name="tajweed_rule_1_3_title">Idgham Bilaghunnah</string>
-    <string name="tajweed_rule_1_3_desc">Dilebur tanpa dengung jika bertemu huruf (ل، ر).</string>
-    <string name="tajweed_rule_1_4_title">Iqlab</string>
-    <string name="tajweed_rule_1_4_desc">Menukar bunyi Nun/Tanwin menjadi Mim dengan dengung jika bertemu (ب).</string>
-    <string name="tajweed_rule_1_5_title">Ikhfa Haqiqi</string>
-    <string name="tajweed_rule_1_5_desc">Disamarkan dengan dengung jika bertemu 15 huruf sisanya.</string>
-    <string name="tajweed_rule_2_title">Mim Sukun</string>
-    <string name="tajweed_rule_2_desc">Aturan membaca Mim sukun ketika bertemu huruf hijaiyah.</string>
-    <string name="tajweed_rule_2_1_title">Ikhfa Syafawi</string>
-    <string name="tajweed_rule_2_1_desc">Disamarkan di bibir dengan dengung jika bertemu huruf (ب).</string>
-    <string name="tajweed_rule_2_2_title">Idgham Mimi</string>
-    <string name="tajweed_rule_2_2_desc">Dilebur dengan dengung jika bertemu huruf (م) lainnya.</string>
-    <string name="tajweed_rule_2_3_title">Idzhar Syafawi</string>
-    <string name="tajweed_rule_2_3_desc">Dibaca jelas tanpa dengung jika bertemu huruf selain Ba dan Mim.</string>
-    <string name="tajweed_rule_3_title">Idgham (Peleburan Huruf)</string>
-    <string name="tajweed_rule_3_desc">Hukum meleburkan dua huruf yang sama, makhrajnya sama, atau berdekatan.</string>
-    <string name="tajweed_rule_3_1_title">Idgham Mutamathilain</string>
-    <string name="tajweed_rule_3_1_desc">Pertemuan dua huruf yang sama makhraj dan sifatnya.</string>
-    <string name="tajweed_rule_3_2_title">Idgham Mutajanisain</string>
-    <string name="tajweed_rule_3_2_desc">Pertemuan dua huruf yang makhrajnya sama tetapi sifatnya beda (seperti Ta dengan Da).</string>
-    <string name="tajweed_rule_3_3_title">Idgham Mutaqaribain</string>
-    <string name="tajweed_rule_3_3_desc">Pertemuan dua huruf yang makhraj dan sifatnya berdekatan (seperti Qaf dengan Kaf).</string>
-    <string name="tajweed_rule_4_title">Hukum Mad (Panjang)</string>
-    <string name="tajweed_rule_4_desc">Aturan memanjangkan suara huruf.</string>
-    <string name="tajweed_rule_4_1_title">Mad Thabi\'i</string>
-    <string name="tajweed_rule_4_1_desc">Mad asli panjang 2 harakat (Alif setelah Fathah, Ya setelah Kasrah, Waw setelah Dhammah).</string>
-    <string name="tajweed_rule_4_2_title">Mad Wajib Muttashil</string>
-    <string name="tajweed_rule_4_2_desc">Mad Thabi\'i bertemu Hamzah dalam satu kata (panjang 4-5 harakat).</string>
-    <string name="tajweed_rule_4_3_title">Mad Ja\'iz Munfashil</string>
-    <string name="tajweed_rule_4_3_desc">Mad Thabi\'i bertemu Hamzah di kata yang berbeda (panjang 2, 4, atau 5 harakat).</string>
-    <string name="tajweed_rule_4_4_title">Mad Arid Lissukun</string>
-    <string name="tajweed_rule_4_4_desc">Mad Thabi\'i diikuti huruf hidup yang disukunkan karena waqaf/berhenti (2, 4, atau 6 harakat).</string>
-    <string name="tajweed_rule_5_title">Hukum Ra</string>
-    <string name="tajweed_rule_5_desc">Aturan membaca huruf Ra tebal (Tafkhim) atau tipis (Tarqiq).</string>
-    <string name="tajweed_rule_5_1_title">Ra Tafkhim (Tebal)</string>
-    <string name="tajweed_rule_5_1_desc">Dibaca tebal ketika Ra berharakat Fathah, Dhammah, atau sukun didahului huruf fathah/dhammah.</string>
-    <string name="tajweed_rule_5_2_title">Ra Tarqiq (Tipis)</string>
-    <string name="tajweed_rule_5_2_desc">Dibaca tipis ketika Ra berharakat Kasrah atau sukun didahului huruf kasrah.</string>
-    <string name="tajweed_rule_6_title">Qalqalah</string>
-    <string name="tajweed_rule_6_desc">Pantulan suara pada huruf (ق، ط، ب، ج، د) yang bersukun.</string>
-    <string name="tajweed_rule_6_1_title">Qalqalah Sughra (Kecil)</string>
-    <string name="tajweed_rule_6_1_desc">Bila huruf Qalqalah berharakat sukun asli di tengah kata.</string>
-    <string name="tajweed_rule_6_2_title">Qalqalah Kubra (Besar)</string>
-    <string name="tajweed_rule_6_2_desc">Bila huruf Qalqalah disukunkan karena waqaf (berhenti) di akhir kata.</string>
-    <string name="tajweed_rule_7_title">Gharib &amp; Tanda Baca Khusus</string>
-    <string name="tajweed_rule_7_desc">Bacaan khusus yang tidak biasa dan tanda baca di dalam Al-Qur\'an.</string>
-    <string name="tajweed_rule_7_1_title">Saktah</string>
-    <string name="tajweed_rule_7_1_desc">Berhenti sejenak tanpa bernafas lalu melanjutkan bacaan.</string>
-    <string name="tajweed_rule_7_2_title">Isymam</string>
-    <string name="tajweed_rule_7_2_desc">Memonyongkan bibir tanpa suara untuk isyarat dhammah (hanya ada di Surat Yusuf ayat 11).</string>
+<string name="titleDzikirDoa">Dzikir &amp; Doa</string>
+    <string name="dhikr_cat_all">Semua</string>
+    <string name="dhikr_cat_morning">Dzikir Pagi</string>
+    <string name="dhikr_cat_evening">Dzikir Petang</string>
+    <string name="dhikr_cat_post_prayer">Setelah Shalat</string>
+    <string name="dhikr_cat_tahlil">Tahlil</string>
+    <string name="dhikr_cat_daily">Doa Harian</string>
+    <string name="dhikr_cat_quranic">Doa Qur\'ani</string>
+
+    <string name="dhikr_open_in_quran">Buka di Al-Qur\'an</string>
+    <string name="dhikr_counter_target">Target: %d×</string>
+    <string name="dhikr_tasbeeh_counter">Tasbih Digital</string>
+    <string name="dhikr_tap_to_count">Tekan untuk menghitung</string>
+    <string name="dhikr_completed">Selesai!</string>
+    <string name="dhikr_play_audio">Putar Audio</string>
+    <string name="dhikr_search_hint">Cari dzikir atau doa...</string>
+    <string name="dhikr_show_virtue">Lihat Keutamaan (Fadhilah)</string>
+    <string name="dhikr_hide_virtue">Sembunyikan Keutamaan</string>
+
+    <!-- Dzikir Pagi -->
+    <string name="dhikr_morning_ayat_kursi_title">Ayat Kursi (Dzikir Pagi)</string>
+    <string name="dhikr_morning_ayat_kursi_trans">Allah, tidak ada tuhan selain Dia yang Mahahidup, yang terus-menerus mengurus (makhluk-Nya)...</string>
+    <string name="dhikr_morning_ayat_kursi_virtue">Barangsiapa membacanya di pagi hari akan dilindungi dari gangguan kejahatan hingga sore hari.</string>
+
+    <string name="dhikr_sayyidul_istighfar_title">Sayyidul Istighfar</string>
+    <string name="dhikr_sayyidul_istighfar_trans">Ya Allah, Engkau adalah Tuhanku, tidak ada tuhan selain Engkau. Engkau yang menciptakan aku dan aku adalah hamba-Mu...</string>
+    <string name="dhikr_sayyidul_istighfar_virtue">Rajanya istighfar. Barangsiapa membacanya dengan penuh keyakinan lalu meninggal hari itu, ia termasuk penghuni surga.</string>
+
+    <string name="dhikr_bismillah_illadzi_title">Doa Perlindungan dari Bahaya</string>
+    <string name="dhikr_bismillah_illadzi_trans">Dengan nama Allah yang bersama nama-Nya tidak ada sesuatu pun yang berbahaya di bumi maupun di langit...</string>
+    <string name="dhikr_bismillah_illadzi_virtue">Dibaca 3x pada pagi dan petang agar terhindar dari bahaya dan musibah.</string>
+
+    <string name="dhikr_subhanallah_bihamdihi_title">Tasbih &amp; Tahmid 100×</string>
+    <string name="dhikr_subhanallah_bihamdihi_trans">Maha Suci Allah dan segala puji bagi-Nya.</string>
+    <string name="dhikr_subhanallah_bihamdihi_virtue">Dihapuskan dosa-dosanya meskipun sebanyak buih di lautan (HR. Bukhari &amp; Muslim).</string>
+
+    <!-- Dzikir Petang -->
+    <string name="dhikr_muawwidzatain_title">Surah Al-Ikhlas, Al-Falaq &amp; An-Nas</string>
+    <string name="dhikr_muawwidzatain_trans">Katakanlah: Dialah Allah, Yang Maha Esa... Katakanlah: Aku berlindung kepada Tuhan yang menguasai subuh...</string>
+    <string name="dhikr_muawwidzatain_virtue">Dibaca 3 kali pada pagi dan petang, cukuplah bagimu dari segala keburukan.</string>
+
+    <string name="dhikr_evening_amsayna_title">Dzikir Kesyukuran Petang</string>
+    <string name="dhikr_evening_amsayna_trans">Kami telah memasuki waktu petang dan kerajaan ini milik Allah, segala puji bagi Allah...</string>
+    <string name="dhikr_evening_amsayna_virtue">Meneguhkan tauhid dan kesyukuran di waktu sore/malam.</string>
+
+    <!-- Setelah Shalat -->
+    <string name="dhikr_post_istighfar_title">Istighfar &amp; Doa Keselamatan</string>
+    <string name="dhikr_post_istighfar_trans">Aku memohon ampun kepada Allah (3x). Ya Allah, Engkau adalah Maha Sejahtera dan dari-Mulah kesejahteraan...</string>
+    <string name="dhikr_post_istighfar_virtue">Sunnah dibaca langsung setelah selesai shalat fardhu.</string>
+
+    <string name="dhikr_post_tasbih_title">Tasbih, Tahmid &amp; Takbir (33×)</string>
+    <string name="dhikr_post_tasbih_trans">Subhanallah (33x), Alhamdulillah (33x), Allahu Akbar (33x).</string>
+    <string name="dhikr_post_tasbih_virtue">Pembersih dosa-dosa kecil setelah setiap shalat fardhu.</string>
+
+    <string name="dhikr_post_dua_prayer_title">Doa Bimbingan Dzikir</string>
+    <string name="dhikr_post_dua_prayer_trans">Ya Allah, bantulah aku untuk selalu mengingat-Mu, bersyukur kepada-Mu, dan beribadah dengan baik kepada-Mu.</string>
+    <string name="dhikr_post_dua_prayer_virtue">Doa yang diajarkan Rasulullah SAW kepada Mu\'adz bin Jabal setelah shalat.</string>
+
+    <!-- Tahlil -->
+    <string name="tahlil_hadrah_title">Hadrah &amp; Al-Fatihah</string>
+    <string name="tahlil_hadrah_trans">Pengiriman pahala Al-Fatihah kepada Nabi Muhammad SAW, keluarga, sahabat, dan seluruh kaum muslimin.</string>
+
+    <string name="tahlil_kalimat_title">Kalimat Tahlil (Laa ilaha illallah)</string>
+    <string name="tahlil_kalimat_trans">Tidak ada tuhan yang berhak disembah selain Allah.</string>
+    <string name="tahlil_kalimat_virtue">Sebaik-baik kalimat dzikir dan pengakuan Tauhid.</string>
+
+    <string name="tahlil_dua_deceased_title">Doa Tahlil &amp; Arwah</string>
+    <string name="tahlil_dua_deceased_trans">Ya Allah, ampunilah mereka, rahmatilah mereka, sejahterakanlah mereka, dan tempatkanlah di dalam surga.</string>
+
+    <!-- Doa Qur'ani -->
+    <string name="quranic_good_both_worlds_title">Doa Kebajikan Dunia &amp; Akhirat</string>
+    <string name="quranic_good_both_worlds_trans">Ya Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat dan lindungilah kami dari azab neraka.</string>
+    <string name="quranic_good_both_worlds_virtue">Doa yang paling sering dibaca oleh Rasulullah SAW (QS. Al-Baqarah: 201).</string>
+
+    <string name="quranic_parents_title">Doa untuk Kedua Orang Tua</string>
+    <string name="quranic_parents_trans">Ya Tuhan kami, ampunilah aku dan kedua ibu bapakku dan sekalian orang-orang mu\'min pada hari terjadinya hisab.</string>
+    <string name="quranic_parents_virtue">Doa Nabi Ibrahim AS untuk kedua orang tua dan kaum mukminin (QS. Ibrahim: 41).</string>
+
+    <string name="quranic_prophet_yunus_title">Doa Nabi Yunus (Pelepas Kesulitan)</string>
+    <string name="quranic_prophet_yunus_trans">Tidak ada tuhan selain Engkau. Maha Suci Engkau, sungguh aku adalah termasuk orang-orang yang zhalim.</string>
+    <string name="quranic_prophet_yunus_virtue">Barangsiapa berdoa dengannya saat mengalami kesulitan, niscaya Allah akan mengabulkan doanya (QS. Al-Anbiya: 87).</string>
+
+    <string name="dhikr_morning_radhitu_billahi_title">Keridhaan Kepada Allah &amp; Rasul (Radhitu Billahi)</string>
+    <string name="dhikr_morning_radhitu_billahi_trans">Aku ridha Allah sebagai Tuhanku, Islam sebagai agamaku, dan Muhammad SAW sebagai nabiku.</string>
+    <string name="dhikr_morning_radhitu_billahi_virtue">Barangsiapa membacanya 3x pada pagi dan petang, Allah berjanji memberikan keridhaan baginya di hari kiamat.</string>
+
+    <string name="dhikr_evening_audzu_bikalimatillahi_title">Perlindungan dari Bahaya Malam</string>
+    <string name="dhikr_evening_audzu_bikalimatillahi_trans">Aku berlindung dengan kalimat-kalimat Allah yang sempurna dari kejahatan makhluk yang diciptakan-Nya.</string>
+    <string name="dhikr_evening_audzu_bikalimatillahi_virtue">Dibaca 3x pada petang hari agar terhindar dari sengatan hewan berbisa dan bahaya malam.</string>
+
+    <string name="dhikr_daily_before_sleeping_title">Doa Sebelum Tidur</string>
+    <string name="dhikr_daily_before_sleeping_trans">Dengan nama-Mu ya Allah aku mati dan aku hidup.</string>
+
+    <string name="dhikr_daily_waking_up_title">Doa Bangun Tidur</string>
+    <string name="dhikr_daily_waking_up_trans">Segala puji bagi Allah yang telah menghidupkan kami setelah mematikan kami, dan kepada-Nya kami dibangkitkan.</string>
+
+    <string name="dhikr_daily_entering_masjid_title">Doa Masuk Masjid</string>
+    <string name="dhikr_daily_entering_masjid_trans">Ya Allah, bukakanlah bagiku pintu-pintu rahmat-Mu.</string>
+
+    <string name="dhikr_daily_leaving_home_title">Doa Keluar Rumah</string>
+    <string name="dhikr_daily_leaving_home_trans">Dengan nama Allah, aku bertawakal kepada Allah, tidak ada daya dan upaya melainkan dengan pertolongan Allah.</string>
+    <string name="dhikr_daily_leaving_home_virtue">Mendapatkan petunjuk, kecukupan, dan perlindungan selama di luar rumah.</string>
+
+    <string name="dhikr_daily_vehicle_title">Doa Naik Kendaraan</string>
+    <string name="dhikr_daily_vehicle_trans">Maha Suci Allah yang telah menundukkan semua ini bagi kami padahal kami sebelumnya tidak mampu menguasainya, dan sesungguhnya kami akan kembali kepada Tuhan kami.</string>
+    <string name="dhikr_daily_vehicle_virtue">Sunnah dibaca saat memulai perjalanan menggunakan kendaraan.</string>
+
+    <string name="quranic_righteous_offspring_title">Doa Mohon Keturunan Soleh</string>
+    <string name="quranic_righteous_offspring_trans">Ya Tuhanku, janganlah Engkau biarkan aku hidup seorang diri tanpa keturunan, dan Engkaulah ahli waris yang terbaik.</string>
+    <string name="quranic_righteous_offspring_virtue">Doa Nabi Zakariya AS memohon keturunan yang soleh (QS. Al-Anbiya: 89).</string>
+
+    <string name="quranic_ease_and_speech_title">Doa Kelapangan &amp; Kemudahan Urusan</string>
+    <string name="quranic_ease_and_speech_trans">Ya Tuhanku, lapangkanlah dadaku, mudahkanlah urusanku, dan lepaskanlah kekakuan dari lidahku agar mereka mengerti perkataanku.</string>
+    <string name="quranic_ease_and_speech_virtue">Doa Nabi Musa AS saat menghadapi tugas berat dan pembicaraan (QS. Ta-Ha: 25-28).</string>
 </resources>

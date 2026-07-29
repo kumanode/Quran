@@ -27,7 +27,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.ProvidedValue
+
+val LocalLiquidGlassEffect = compositionLocalOf { false }
+
 object ThemeUtils {
+    @Composable
+    fun LocalLiquidGlass() = LocalLiquidGlassEffect.current
     const val THEME_MODE_DEFAULT = "app.theme.default"
     const val THEME_MODE_LIGHT = "app.theme.light"
     const val THEME_MODE_DARK = "app.theme.dark"
@@ -113,9 +120,14 @@ object ThemeUtils {
     }
 
     @Composable
+    fun observeColorScheme(context: Context): ColorScheme {
+        return observeColorScheme(context, observeDarkTheme())
+    }
+
+    @Composable
     fun observeColorScheme(
         context: Context,
-        isDarkTheme: Boolean = observeDarkTheme()
+        isDarkTheme: Boolean
     ): ColorScheme {
         val themeColor = observeThemeColor()
         val isDynamicColor = observeIsDynamicColor()

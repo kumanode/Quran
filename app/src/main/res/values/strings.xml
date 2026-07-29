@@ -156,8 +156,7 @@
     <string name="titleEtiquetteVerses">Etiquette in Quran</string>
     <string name="strTitleFeaturedProphets">Prophets in Quran</string>
     <string name="strTitleMajorSins">Major Sins in Quran</string>
-    <string name="titleTajweedRules">Tajweed Rules</string>
-    <string name="theme_liquid_glass">Liquid Glass</string>
+<string name="theme_liquid_glass">Liquid Glass</string>
     <string name="strTitlePrivacyPolicy">Privacy Policy</string>
     <string name="strTitleFailed">Failed</string>
     <string name="strTitleSuccess">Success</string>
@@ -472,81 +471,118 @@
 
     <string name="recitationPlayer">Recitation Player</string>
     <string name="desc_recitation_player_widget">Control Quran recitation from your home screen</string>
-    <string name="tajweed_rule_1_title">Nun Sukun &amp; Tanwin</string>
-    <string name="tajweed_rule_1_desc">Rules regarding the pronunciation of Nun with no vowel or Tanwin.</string>
-    <string name="tajweed_rule_1_1_title">Idzhar Halqi</string>
-    <string name="tajweed_rule_1_1_desc">Read clearly without nasalization when meeting throat letters.</string>
-    <string name="tajweed_rule_1_1_example" translatable="false">مِنْ آيَاتِنَا ، مِنْ حَكِيمٍ</string>
-    <string name="tajweed_rule_1_2_title">Idgham Bighunnah</string>
-    <string name="tajweed_rule_1_2_desc">Merged with nasalization when meeting (ي، ن، م، و).</string>
-    <string name="tajweed_rule_1_2_example" translatable="false">مَنْ يَقُولُ ، مِنْ وَالٍ</string>
-    <string name="tajweed_rule_1_3_title">Idgham Bilaghunnah</string>
-    <string name="tajweed_rule_1_3_desc">Merged without nasalization when meeting (ل، ر).</string>
-    <string name="tajweed_rule_1_3_example" translatable="false">مِنْ لَدُنْ ، مِنْ رَبِّهِمْ</string>
-    <string name="tajweed_rule_1_4_title">Iqlab</string>
-    <string name="tajweed_rule_1_4_desc">Converting the sound into Mim with nasalization when meeting (ب).</string>
-    <string name="tajweed_rule_1_4_example" translatable="false">مِنْ بَعْدِ</string>
-    <string name="tajweed_rule_1_5_title">Ikhfa Haqiqi</string>
-    <string name="tajweed_rule_1_5_desc">Hidden with nasalization when meeting the remaining 15 letters.</string>
-    <string name="tajweed_rule_1_5_example" translatable="false">أَنْزَلَ ، مِنْ دُونِ</string>
-    <string name="tajweed_rule_2_title">Mim Sukun</string>
-    <string name="tajweed_rule_2_desc">Rules for pronouncing Mim with no vowel.</string>
-    <string name="tajweed_rule_2_1_title">Ikhfa Syafawi</string>
-    <string name="tajweed_rule_2_1_desc">Hidden with nasalization when meeting (ب).</string>
-    <string name="tajweed_rule_2_1_example" translatable="false">تَرْمِيهِمْ بِحِجَارَةٍ</string>
-    <string name="tajweed_rule_2_2_title">Idgham Mimi (Mutamathilain)</string>
-    <string name="tajweed_rule_2_2_desc">Merged with nasalization when meeting another (م).</string>
-    <string name="tajweed_rule_2_2_example" translatable="false">لَهُمْ مَثَلًا</string>
-    <string name="tajweed_rule_2_3_title">Idzhar Syafawi</string>
-    <string name="tajweed_rule_2_3_desc">Read clearly without nasalization when meeting letters other than Ba and Mim.</string>
-    <string name="tajweed_rule_2_3_example" translatable="false">أَلَمْ نَشْرَحْ ، عَلَيْهِمْ وَلَا</string>
-    <string name="tajweed_rule_3_title">Idgham (Assimilation)</string>
-    <string name="tajweed_rule_3_desc">Rules for merging identical, similar, or close letters.</string>
-    <string name="tajweed_rule_3_1_title">Idgham Mutamathilain</string>
-    <string name="tajweed_rule_3_1_desc">Merging two identical letters (same articulation point and characteristics).</string>
-    <string name="tajweed_rule_3_1_example" translatable="false">قَدْ دَخَلُوا ، يُدْرِكْكُمُ</string>
-    <string name="tajweed_rule_3_2_title">Idgham Mutajanisain</string>
-    <string name="tajweed_rule_3_2_desc">Merging two letters with the same articulation point but different characteristics.</string>
-    <string name="tajweed_rule_3_2_example" translatable="false">أُجِيبَتْ دَعْوَتُكُمَا</string>
-    <string name="tajweed_rule_3_3_title">Idgham Mutaqaribain</string>
-    <string name="tajweed_rule_3_3_desc">Merging two letters with close articulation points or characteristics.</string>
-    <string name="tajweed_rule_3_3_example" translatable="false">أَلَمْ نَخْلُقْكُمْ</string>
-    <string name="tajweed_rule_4_title">Madd (Elongation)</string>
-    <string name="tajweed_rule_4_desc">Rules for elongating vowel sounds.</string>
-    <string name="tajweed_rule_4_1_title">Madd Thabi\'i</string>
-    <string name="tajweed_rule_4_1_desc">The natural elongation (2 harakat) when a letter is followed by its corresponding vowel letter.</string>
-    <string name="tajweed_rule_4_1_example" translatable="false">نُوحِيهَا</string>
-    <string name="tajweed_rule_4_2_title">Madd Wajib Muttashil</string>
-    <string name="tajweed_rule_4_2_desc">When Madd Thabi\'i is followed by Hamzah in the same word (4-5 harakat).</string>
-    <string name="tajweed_rule_4_2_example" translatable="false">السَّمَاءِ</string>
-    <string name="tajweed_rule_4_3_title">Madd Ja\'iz Munfashil</string>
-    <string name="tajweed_rule_4_3_desc">When Madd Thabi\'i is followed by Hamzah in the next word (2, 4, or 5 harakat).</string>
-    <string name="tajweed_rule_4_3_example" translatable="false">إِنَّا أَنْزَلْنَاهُ</string>
-    <string name="tajweed_rule_4_4_title">Madd Arid Lissukun</string>
-    <string name="tajweed_rule_4_4_desc">When Madd Thabi\'i occurs before a letter made silent due to stopping (2, 4, or 6 harakat).</string>
-    <string name="tajweed_rule_4_4_example" translatable="false">الْعَالَمِينَ</string>
-    <string name="tajweed_rule_5_title">Hukum Ra</string>
-    <string name="tajweed_rule_5_desc">Rules for pronouncing the letter Ra thick (Tafkhim) or thin (Tarqiq).</string>
-    <string name="tajweed_rule_5_1_title">Ra Tafkhim</string>
-    <string name="tajweed_rule_5_1_desc">Pronounced heavily when Ra has Fathah or Dhammah.</string>
-    <string name="tajweed_rule_5_1_example" translatable="false">رَبَّنَا ، كَفَرُوا</string>
-    <string name="tajweed_rule_5_2_title">Ra Tarqiq</string>
-    <string name="tajweed_rule_5_2_desc">Pronounced lightly when Ra has Kasrah.</string>
-    <string name="tajweed_rule_5_2_example" translatable="false">رِزْقًا ، فِرْعَوْنَ</string>
-    <string name="tajweed_rule_6_title">Qalqalah</string>
-    <string name="tajweed_rule_6_desc">Echoing sound produced for letters (ق، ط، ب، ج، د) when they carry a Sukun.</string>
-    <string name="tajweed_rule_6_1_title">Qalqalah Sughra</string>
-    <string name="tajweed_rule_6_1_desc">Occurs in the middle of a word.</string>
-    <string name="tajweed_rule_6_1_example" translatable="false">يَقْطَعُونَ</string>
-    <string name="tajweed_rule_6_2_title">Qalqalah Kubra</string>
-    <string name="tajweed_rule_6_2_desc">Occurs at the end of a word due to stopping.</string>
-    <string name="tajweed_rule_6_2_example" translatable="false">الْفَلَقِ</string>
-    <string name="tajweed_rule_7_title">Gharib &amp; Special Rules</string>
-    <string name="tajweed_rule_7_desc">Unique recitations and punctuation marks in the Quran.</string>
-    <string name="tajweed_rule_7_1_title">Saktah</string>
-    <string name="tajweed_rule_7_1_desc">A brief breathless pause before continuing the recitation.</string>
-    <string name="tajweed_rule_7_1_example" translatable="false">مَرۡقَدِنَا ۜ هٰذَا</string>
-    <string name="tajweed_rule_7_2_title">Isymam</string>
-    <string name="tajweed_rule_7_2_desc">Rounding the lips without sound to indicate a hidden Dhammah.</string>
-    <string name="tajweed_rule_7_2_example" translatable="false">لَا تَأْمَنَّا</string>
+    <string name="titleDzikirDoa">Dhikr &amp; Supplications</string>
+    <string name="dhikr_cat_all">All</string>
+    <string name="dhikr_cat_morning">Morning</string>
+    <string name="dhikr_cat_evening">Evening</string>
+    <string name="dhikr_cat_post_prayer">Post-Prayer</string>
+    <string name="dhikr_cat_tahlil">Tahlil</string>
+    <string name="dhikr_cat_daily">Daily Duas</string>
+    <string name="dhikr_cat_quranic">Quranic Duas</string>
+
+    <string name="dhikr_open_in_quran">Open in Quran</string>
+    <string name="dhikr_counter_target">Target: %d</string>
+    <string name="dhikr_tasbeeh_counter">Digital Tasbih</string>
+    <string name="dhikr_tap_to_count">Tap to count</string>
+    <string name="dhikr_completed">Completed!</string>
+    <string name="dhikr_play_audio">Play Audio</string>
+    <string name="dhikr_search_hint">Search dhikr or dua...</string>
+    <string name="dhikr_show_virtue">View Virtue (Fadhilah)</string>
+    <string name="dhikr_hide_virtue">Hide Virtue Description</string>
+
+    <!-- Morning Dhikr -->
+    <string name="dhikr_morning_ayat_kursi_title">Ayat Kursi (Morning)</string>
+    <string name="dhikr_morning_ayat_kursi_trans">Allah! There is no deity except Him, the Ever-Living, the Sustainer of all existence...</string>
+    <string name="dhikr_morning_ayat_kursi_virtue">Whoever recites it in the morning will be protected from evil until evening.</string>
+
+    <string name="dhikr_sayyidul_istighfar_title">Sayyidul Istighfar</string>
+    <string name="dhikr_sayyidul_istighfar_trans">O Allah, You are my Lord; there is no deity except You. You created me and I am Your servant...</string>
+    <string name="dhikr_sayyidul_istighfar_virtue">The master of seeking forgiveness. Whoever recites it with firm faith and passes away will enter Paradise.</string>
+
+    <string name="dhikr_bismillah_illadzi_title">Protection from Harm</string>
+    <string name="dhikr_bismillah_illadzi_trans">In the name of Allah with Whose name nothing on earth or in heaven can cause harm...</string>
+    <string name="dhikr_bismillah_illadzi_virtue">Recite 3x in morning and evening to be safeguarded from all harm.</string>
+
+    <string name="dhikr_subhanallah_bihamdihi_title">Tasbih &amp; Tahmid 100x</string>
+    <string name="dhikr_subhanallah_bihamdihi_trans">Glory be to Allah and His is the praise.</string>
+    <string name="dhikr_subhanallah_bihamdihi_virtue">Sins will be forgiven even if they were as abundant as the foam of the sea.</string>
+
+    <!-- Evening Dhikr -->
+    <string name="dhikr_muawwidzatain_title">Surah Al-Ikhlas, Al-Falaq &amp; An-Nas</string>
+    <string name="dhikr_muawwidzatain_trans">Say: He is Allah, [who is] One... Say: I seek refuge in the Lord of daybreak...</string>
+    <string name="dhikr_muawwidzatain_virtue">Recite 3 times in morning and evening for complete sufficiency.</string>
+
+    <string name="dhikr_evening_amsayna_title">Evening Gratitude &amp; Praise</string>
+    <string name="dhikr_evening_amsayna_trans">We have reached the evening and at this evening the entire kingdom belongs to Allah...</string>
+    <string name="dhikr_evening_amsayna_virtue">Affirms monotheism and gratitude at nightfall.</string>
+
+    <!-- Post-Prayer -->
+    <string name="dhikr_post_istighfar_title">Istighfar &amp; Supplication for Peace</string>
+    <string name="dhikr_post_istighfar_trans">I seek forgiveness from Allah (3x). O Allah, You are Peace and from You comes peace...</string>
+    <string name="dhikr_post_istighfar_virtue">Sunnah right after finishing obligatory prayers.</string>
+
+    <string name="dhikr_post_tasbih_title">Tasbih, Tahmid &amp; Takbir (33x)</string>
+    <string name="dhikr_post_tasbih_trans">Subhanallah (33x), Alhamdulillah (33x), Allahu Akbar (33x).</string>
+    <string name="dhikr_post_tasbih_virtue">Forgiveness of minor sins after every obligatory prayer.</string>
+
+    <string name="dhikr_post_dua_prayer_title">Supplication for Remembrance</string>
+    <string name="dhikr_post_dua_prayer_trans">O Allah, help me to remember You, thank You, and worship You in the best manner.</string>
+    <string name="dhikr_post_dua_prayer_virtue">Recommended prayer instructed by the Prophet (PBUH) to Mu\'adh bin Jabal.</string>
+
+    <!-- Tahlil -->
+    <string name="tahlil_hadrah_title">Hadrah &amp; Al-Fatihah</string>
+    <string name="tahlil_hadrah_trans">Sending Al-Fatihah blessings to the Prophet (PBUH), his family, companions, and deceased Muslims.</string>
+
+    <string name="tahlil_kalimat_title">Kalimat Tahlil (Laa ilaha illallah)</string>
+    <string name="tahlil_kalimat_trans">There is no deity worthy of worship except Allah.</string>
+    <string name="tahlil_kalimat_virtue">The best remembrance and declaration of Tawheed.</string>
+
+    <string name="tahlil_dua_deceased_title">Supplication for Deceased</string>
+    <string name="tahlil_dua_deceased_trans">O Allah, forgive them, have mercy on them, grant them peace, and admit them to Paradise.</string>
+
+    <!-- Quranic Duas -->
+    <string name="quranic_good_both_worlds_title">Supplication for Good in Both Worlds</string>
+    <string name="quranic_good_both_worlds_trans">Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good and protect us from the punishment of the Fire.</string>
+    <string name="quranic_good_both_worlds_virtue">One of the most frequent supplications of the Prophet (PBUH) (Surah Al-Baqarah: 201).</string>
+
+    <string name="quranic_parents_title">Supplication for Parents</string>
+    <string name="quranic_parents_trans">Our Lord, forgive me and my parents and the believers the Day the account is established.</string>
+    <string name="quranic_parents_virtue">Prayer of Prophet Ibrahim (AS) for parents and believers (Surah Ibrahim: 41).</string>
+
+    <string name="quranic_prophet_yunus_title">Supplication of Prophet Yunus</string>
+    <string name="quranic_prophet_yunus_trans">There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.</string>
+    <string name="quranic_prophet_yunus_virtue">Any Muslim who supplicates with this during hardship will have their prayer answered (Surah Al-Anbiya: 87).</string>
+
+    <string name="dhikr_morning_radhitu_billahi_title">Praise of Satisfaction (Radhitu Billahi)</string>
+    <string name="dhikr_morning_radhitu_billahi_trans">I am pleased with Allah as my Lord, Islam as my religion, and Muhammad (PBUH) as my Prophet.</string>
+    <string name="dhikr_morning_radhitu_billahi_virtue">Whoever recites it 3x in morning and evening, Allah takes it upon Himself to please him on Resurrection Day.</string>
+
+    <string name="dhikr_evening_audzu_bikalimatillahi_title">Protection from Evening Harm</string>
+    <string name="dhikr_evening_audzu_bikalimatillahi_trans">I seek refuge in the perfect words of Allah from the evil of what He has created.</string>
+    <string name="dhikr_evening_audzu_bikalimatillahi_virtue">Recite 3x in the evening to be protected from stings, bites, and nocturnal harm.</string>
+
+    <string name="dhikr_daily_before_sleeping_title">Before Sleeping</string>
+    <string name="dhikr_daily_before_sleeping_trans">In Your name, O Allah, I die and I live.</string>
+
+    <string name="dhikr_daily_waking_up_title">Upon Waking Up</string>
+    <string name="dhikr_daily_waking_up_trans">All praise is due to Allah who gave us life after causing us to die, and unto Him is the resurrection.</string>
+
+    <string name="dhikr_daily_entering_masjid_title">Entering the Masjid</string>
+    <string name="dhikr_daily_entering_masjid_trans">O Allah, open for me the doors of Your mercy.</string>
+
+    <string name="dhikr_daily_leaving_home_title">Leaving the House</string>
+    <string name="dhikr_daily_leaving_home_trans">In the name of Allah, I place my trust in Allah; there is no power nor might except with Allah.</string>
+    <string name="dhikr_daily_leaving_home_virtue">Guarantees guidance, protection, and sufficiency when going out.</string>
+
+    <string name="dhikr_daily_vehicle_title">Riding a Vehicle</string>
+    <string name="dhikr_daily_vehicle_trans">Glory to Him who has subjected this to us, and we could not have otherwise subdued it. And indeed, to our Lord we shall return.</string>
+    <string name="dhikr_daily_vehicle_virtue">Sunnah supplication when boarding a vehicle or starting a journey.</string>
+
+    <string name="quranic_righteous_offspring_title">Supplication for Righteous Offspring</string>
+    <string name="quranic_righteous_offspring_trans">My Lord, do not leave me alone [with no heir] while You are the best of inheritors.</string>
+    <string name="quranic_righteous_offspring_virtue">Prayer of Prophet Zakariya (AS) for blessed offspring (Surah Al-Anbiya: 89).</string>
+
+    <string name="quranic_ease_and_speech_title">Supplication for Ease &amp; Clarity</string>
+    <string name="quranic_ease_and_speech_trans">My Lord, expand for me my breast [with assurance] and ease for me my task and untie the knot from my tongue that they may understand my speech.</string>
+    <string name="quranic_ease_and_speech_virtue">Prayer of Prophet Musa (AS) when facing difficult tasks and public speech (Surah Ta-Ha: 25-28).</string>
 </resources>

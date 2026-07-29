@@ -1,0 +1,15 @@
+package com.quran.app.api.models
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ResourcesVersions(
+    @SerialName("urls") val urlsVersion: Long,
+    @SerialName("translations") val translationsVersion: Long,
+    @SerialName("recitations") val recitationsVersion: Long,
+    @SerialName("recitationTranslations") val recitationTranslationsVersion: Long,
+    @SerialName("tafsirs") val tafsirsVersion: Long,
+    @SerialName("wbw") val wbwVersion: Long,
+    @SerialName("wbw_audio") val wbwAudioVersion: Long = 0L,
+)

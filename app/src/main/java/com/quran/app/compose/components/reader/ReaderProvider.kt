@@ -1,0 +1,264 @@
+package com.quran.app.compose.components.reader
+
+import android.widget.Toast
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.quran.app.R
+import com.quran.app.components.reader.ChapterVersePair
+import com.quran.app.compose.components.dialogs.WaitingDialog
+import com.quran.app.compose.components.reader.dialogs.BookmarkViewerData
+import com.quran.app.compose.components.reader.dialogs.BookmarkViewerSheet
+import com.quran.app.compose.components.reader.dialogs.FootnotePresenter
+import com.quran.app.compose.components.reader.dialogs.FootnotePresenterData
+import com.quran.app.compose.components.reader.dialogs.QuickReference
+import com.quran.app.compose.components.reader.dialogs.QuickReferenceData
+import com.quran.app.compose.components.reader.dialogs.VerseOptionsSheet
+import com.quran.app.compose.components.reader.dialogs.WbwSheet
+import com.quran.app.compose.components.reader.dialogs.WbwSheetData
+import com.quran.app.compose.utils.preferences.ReaderPreferences
+import com.quran.app.db.entities.quran.AyahWordEntity
+import com.quran.app.db.relations.VerseWithDetails
+import com.quran.app.utils.Log
+import com.quran.app.utils.mediaplayer.RecitationController
+import com.quran.app.utils.mediaplayer.WbwAudioPlayResult
+import com.quran.app.utils.mediaplayer.WbwAudioPlayer
+import com.quran.app.utils.quran.QuranMeta
+import com.quran.app.utils.reader.LocalVerseActions
+import com.quran.app.utils.reader.VerseActions
+import com.quran.app.utils.reader.atlas.LocalQuranAtlasBundle
+import com.quran.app.utils.reader.atlas.QuranAtlasLoader
+import com.quran.app.utils.reader.atlas.rememberQuranAtlasBundle
+import com.quran.app.utils.reader.factory.ReaderFactory
+import com.quran.app.utils.reader.wbw.WbwManager
+import com.quran.app.utils.univ.MessageUtils
+import com.quran.app.utils.univ.StringUtils
+import com.quran.app.viewModels.ReaderProviderViewModel
+import kotlinx.coroutines.launch
+
+
+val LocalReaderViewModel = staticCompositionLocalOf<ReaderProviderViewModel> {
+    error("ReaderProviderViewModel not provided")
+}
+
+data class LocalRecitationStateData(
+    val controller: RecitationController,
+    val isAnyPlaying: Boolean,
+    val playingVerse: ChapterVersePair,
+)
+
+val LocalRecitation = staticCompositionLocalOf<LocalRecitationStateData> {
+    error("LocalRecitationState not provided")
+}
+
+data class LocalWbwStateData(
+    val isWbwRtl: Boolean,
+    val activeTooltipWord: AyahWordEntity?,
+    val onDismissTooltip: () -> Unit,
+    val onForcePlay: (AyahWordEntity) -> Unit,
+    val onWordClick: (AyahWordEntity) -> Unit,
+    val isWbwAudioLoading: (Int, Int, Int) -> Boolean,
+    val toggleWbwSheet: (WbwSheetData?) -> Unit,
+    val isWbwSheetOpen: Boolean,
+)
+
+val LocalWbwState = staticCompositionLocalOf<LocalWbwStateData> {
+    error("LocalWbwState not provided")
+}
+
+@Composable
+fun ReaderProvider(
+    content: @Composable () -> Unit
+) {
+    val viewModel = viewModel<ReaderProviderViewModel>()
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val bundle = rememberQuranAtlasBundle(viewModel.externalQuranDb)
+    val isAtlasImporting by QuranAtlasLoader.isImporting
+
+    val controller = viewModel.controller
+    val recitationState by controller.state.collectAsStateWithLifecycle()
+    val isPlaying by controller.isPlayingState.collectAsStateWithLifecycle()
+
+    var bookmarkViewerData by remember { mutableStateOf<BookmarkViewerData?>(null) }
+    var footnotePresenterData by remember { mutableStateOf<FootnotePresenterData?>(null) }
+    var verseOptionsVerse by remember { mutableStateOf<VerseWithDetails?>(null) }
+    var quickReferenceData by remember { mutableStateOf<QuickReferenceData?>(null) }
+    var wbwSheetData by remember { mutableStateOf<WbwSheetData?>(null) }
+
+    var wbwWordLoadingKey by remember { mutableStateOf<String?>(null) }
+
+    var activeTooltipWord by remember { mutableStateOf<AyahWordEntity?>(null) }
+
+    val wbwId = ReaderPreferences.observeWbwId()
+    val isWbwRtl by produceState<Boolean>(false, wbwId) {
+        val wbwInfo = WbwManager.getAvailable(context, false)?.wbw?.firstOrNull {
+            it.id == wbwId
+        }
+
+        value = StringUtils.isRtlLanguage(wbwInfo?.langCode)
+    }
+
+
+    fun playWord(word: AyahWordEntity) {
+        val (chapterNo, verseNo) = QuranMeta.getVerseNoFromAyahId(word.ayahId)
+
+        coroutineScope.launch {
+            val key = "$chapterNo:$verseNo:${word.wordIndex}"
+            wbwWordLoadingKey = key
+
+            try {
+                when (WbwAudioPlayer.play(
+                    context,
+                    chapterNo,
+                    verseNo,
+                    word.wordIndex,
+                )) {
+                    WbwAudioPlayResult.Success -> Unit
+                    WbwAudioPlayResult.NoInternet -> MessageUtils.popNoInternetToast(context)
+
+                    WbwAudioPlayResult.TimingsNotLoaded -> MessageUtils.showRemovableToast(
+                        context,
+                        R.string.wbwAudioTimingsCouldNotLoad,
+                        Toast.LENGTH_LONG,
+                    )
+
+                    WbwAudioPlayResult.InvalidTiming, WbwAudioPlayResult.NoChapterAudio -> MessageUtils.showRemovableToast(
+                        context,
+                        R.string.wbwAudioCouldNotPlay,
+                        Toast.LENGTH_LONG,
+                    )
+                }
+            } finally {
+                if (wbwWordLoadingKey == key) {
+                    wbwWordLoadingKey = null
+                }
+            }
+        }
+    }
+
+    CompositionLocalProvider(
+        LocalReaderViewModel provides viewModel,
+        LocalQuranAtlasBundle provides bundle,
+        LocalVerseActions provides remember {
+            VerseActions(
+                onReferenceClick = { slugs, chapterNo, verses ->
+                    quickReferenceData = QuickReferenceData(slugs, chapterNo, verses)
+                },
+                onVerseOption = { verse -> verseOptionsVerse = verse },
+                onFootnoteClick = { verse, footnote ->
+                    Log.d("FOOTNOTE", verse, footnote)
+                    footnotePresenterData = FootnotePresenterData(
+                        verse, footnote
+                    )
+                },
+                onBookmarkRequest = { chapterNo, verseRange ->
+                    coroutineScope.launch {
+                        if (viewModel.userRepository.isBookmarked(
+                                chapterNo, verseRange
+                            )
+                        ) {
+                            bookmarkViewerData = BookmarkViewerData(
+                                chapterNo = chapterNo,
+                                fromVerse = verseRange.first,
+                                toVerse = verseRange.last,
+                                showOpenInReaderButton = false,
+                            )
+                        } else {
+                            viewModel.userRepository.addToBookmark(
+                                chapterNo = chapterNo, verseRange, note = null
+                            )
+                        }
+                    }
+
+                })
+        },
+        LocalRecitation provides LocalRecitationStateData(
+            controller = controller,
+            isAnyPlaying = isPlaying,
+            playingVerse = recitationState.currentVerse,
+        ),
+        LocalWbwState provides LocalWbwStateData(
+            isWbwRtl = isWbwRtl,
+            isWbwAudioLoading = { chapterNo, verseNo, wordIndex ->
+                wbwWordLoadingKey == "$chapterNo:$verseNo:$wordIndex"
+            },
+            activeTooltipWord = activeTooltipWord,
+            onDismissTooltip = { activeTooltipWord = null },
+            onForcePlay = ::playWord,
+            onWordClick = { word ->
+                coroutineScope.launch {
+                    val shouldPlay = ReaderPreferences.getWbwRecitationEnabled()
+
+                    if (shouldPlay) {
+                        playWord(word)
+                    }
+
+                    val tooltipEnabled =
+                        ReaderPreferences.getWbwTooltipShowTranslation() || ReaderPreferences.getWbwTooltipShowTransliteration()
+
+                    activeTooltipWord = if (tooltipEnabled) {
+                        word
+                    } else {
+                        null
+                    }
+                }
+            },
+            toggleWbwSheet = { data ->
+                wbwSheetData = data
+            },
+            isWbwSheetOpen = wbwSheetData != null,
+        )
+    ) {
+        content()
+
+        WaitingDialog(
+            isOpen = isAtlasImporting,
+            text = stringResource(R.string.msgPreparingPrebuiltAtlas)
+        )
+
+        VerseOptionsSheet(
+            vwd = verseOptionsVerse,
+            onFootnotes = { v ->
+                verseOptionsVerse = null
+                footnotePresenterData = FootnotePresenterData(v, null)
+            },
+        ) { verseOptionsVerse = null }
+
+        FootnotePresenter(footnotePresenterData) {
+            footnotePresenterData = null
+        }
+
+        BookmarkViewerSheet(bookmarkViewerData) {
+            bookmarkViewerData = null
+        }
+
+        WbwSheet(
+            data = wbwSheetData,
+            onDismiss = { wbwSheetData = null },
+        )
+    }
+
+    // Should stay outside the composition provider
+    QuickReference(
+        data = quickReferenceData,
+        onOpenInReader = { chapterNo, range ->
+            quickReferenceData = null
+            ReaderFactory.startVerseRange(context, chapterNo, range.first, range.last)
+        },
+        onClose = {
+            quickReferenceData = null
+        },
+    )
+}

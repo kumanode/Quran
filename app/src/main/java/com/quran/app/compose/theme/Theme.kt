@@ -32,6 +32,12 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.material3.ColorScheme
 
+import androidx.compose.runtime.Stable
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.quran.app.compose.utils.LocalLiquidGlassEffect
+
+@Stable
 @Composable
 fun ColorScheme.animate(): ColorScheme {
     val animationSpec = tween<Color>(durationMillis = 400)
@@ -83,7 +89,8 @@ fun QuranAppTheme(
     val context = LocalContext.current
 
     val isDarkTheme = ThemeUtils.observeDarkTheme()
-    val colorScheme = ThemeUtils.observeColorScheme(context, isDarkTheme).animate()
+    val rawColorScheme = ThemeUtils.observeColorScheme(context, isDarkTheme)
+    val colorScheme = rawColorScheme.animate()
     val appLocale by appLocaleFlow.collectAsState()
 
     if (!view.isInEditMode) {
@@ -97,7 +104,7 @@ fun QuranAppTheme(
 
             if (window != null) {
                 WindowCompat.getInsetsController(window, view).apply {
-                    isAppearanceLightStatusBars = false  // Always white icons on colored gradient app bar
+                    isAppearanceLightStatusBars = !isDarkTheme
                     isAppearanceLightNavigationBars = !isDarkTheme
                 }
             }
@@ -105,25 +112,35 @@ fun QuranAppTheme(
     }
 
     val isLiquidGlass = ThemeUtils.observeIsLiquidGlassEffect()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+    val isResumed = lifecycleState.isAtLeast(Lifecycle.State.RESUMED)
+    val shouldAnimate = isLiquidGlass && isResumed
 
-    // Setup infinite transition for organic fluid animation
-    val infiniteTransition = rememberInfiniteTransition(label = "liquid_glass_bg")
-    val time by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 2f * Math.PI.toFloat(),
-        animationSpec = infiniteRepeatable(
-            animation = tween(25000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "time"
-    )
+    val time = if (shouldAnimate) {
+        val infiniteTransition = rememberInfiniteTransition(label = "liquid_glass_bg")
+        infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 2f * Math.PI.toFloat(),
+            animationSpec = infiniteRepeatable(
+                animation = tween(25000, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            ),
+            label = "time"
+        ).value
+    } else {
+        0f
+    }
 
-    CompositionLocalProvider(LocalAppLocale provides appLocale) {
+    CompositionLocalProvider(
+        LocalAppLocale provides appLocale,
+        LocalLiquidGlassEffect provides isLiquidGlass
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = getAppTypography(),
             content = {
-                val backgroundModifier = if (isLiquidGlass) {
+                val backgroundModifier = if (shouldAnimate) {
                     Modifier.drawBehind {
                         val width = size.width
                         val height = size.height
@@ -170,6 +187,8 @@ fun QuranAppTheme(
                             radius = width * 0.65f
                         )
                     }
+                } else if (isLiquidGlass) {
+                    Modifier.background(colorScheme.surfaceContainerLowest)
                 } else {
                     Modifier
                 }
@@ -184,6 +203,5 @@ fun QuranAppTheme(
             }
         )
     }
-
 }
 

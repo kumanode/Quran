@@ -1,6 +1,6 @@
 [versions]
 coreKtx = "1.15.0"
-gradle = "9.1.0"
+gradle = "9.2.1"
 kotlinGradlePlugin = "2.2.21"
 lifecycle = "2.8.7"
 desugaring = "2.1.4"
@@ -28,6 +28,7 @@ activityKtx = "1.12.1"
 fragmentKtx = "1.8.9"
 room = "2.8.4"
 paging = "3.4.2"
+ksp = "2.2.21-2.0.5"
 
 compose-navigation = "2.9.7"
 navigation-fragment-ktx = "2.9.7"
@@ -117,3 +118,4 @@ coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version
 
 [plugins]
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinGradlePlugin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
