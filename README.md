@@ -1,8 +1,9 @@
 <div align="center">
 
-  <img src="app/src/main/res/mipmap-xxxhdpi/icon_launcher_round.webp" alt="Quran Logo" width="120" height="120"/>
+  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp" alt="Quran Logo" width="120" height="120"/>
 
   # 📖 Quran
+
 
   **A modern, ad-free, and privacy-focused Quran application for Android.**
 
